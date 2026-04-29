@@ -15,17 +15,6 @@ app.use('/api/courses/:courseId/lessons',  require('./routes/lesson.routes'));
 app.use('/api/courses/:courseId/progress', require('./routes/progress.routes'));
 
 
-app.get('/debug', (req, res) => {
-  const publicPath = path.join(process.cwd(), 'public');
-  const exists = fs.existsSync(publicPath);
-  const files = exists ? fs.readdirSync(publicPath) : [];
-  res.json({ publicPath, exists, files });
-});
-
-
-app.get('/test', (req, res) => {
-  res.json({ success: true, message: 'Server is running' });
-});
 // Error handler
 app.use(require('./middleware/error'));
 

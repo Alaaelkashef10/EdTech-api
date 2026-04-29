@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — EduFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex items-center justify-between">
+    <a href="/" class="logo text-2xl font-bold text-cyan-400">Edu<span class="text-white">Flow</span></a>
+    <div class="flex items-center gap-4">
+      <span class="text-gray-300 text-sm">Hi, <strong id="nav-username"></strong></span>
+      <a href="/" class="text-gray-400 hover:text-white text-sm transition">Home</a>
+      <button onclick="logout()" class="btn-ghost text-sm px-4 py-2 rounded-lg">Logout</button>
+    </div>
+  </nav>
+
+  <div class="pt-24 px-6 max-w-7xl mx-auto pb-20">
+
+    <!-- Header -->
+    <div class="mb-10">
+      <h1 class="text-3xl font-extrabold" id="dashboard-title">Dashboard</h1>
+      <p class="text-gray-400 mt-1 text-sm" id="dashboard-subtitle"></p>
+    </div>
+
+    <!-- Loading -->
+    <div id="dashboard-loading" class="text-center py-20">
+      <div class="spinner mx-auto mb-4"></div>
+      <p class="text-gray-500 text-sm">Loading dashboard...</p>
+    </div>
+
+    <!-- ===== STUDENT DASHBOARD ===== -->
+    <div id="student-dashboard" class="hidden">
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        <div class="stat-card rounded-2xl p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Enrolled Courses</p>
+          <p class="text-3xl font-extrabold text-cyan-400" id="stat-enrolled">0</p>
+        </div>
+        <div class="stat-card rounded-2xl p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Completed</p>
+          <p class="text-3xl font-extrabold text-emerald-400" id="stat-completed">0</p>
+        </div>
+        <div class="stat-card rounded-2xl p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">In Progress</p>
+          <p class="text-3xl font-extrabold text-violet-400" id="stat-inprogress">0</p>
+        </div>
+      </div>
+
+      <!-- My Courses -->
+      <h2 class="text-xl font-bold mb-4">My Courses</h2>
+      <div id="student-courses-loading" class="text-gray-500 text-sm py-4">Loading courses...</div>
+      <div id="student-courses" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="student-empty" class="hidden text-center py-16">
+        <p class="text-gray-500 text-lg mb-4">You haven't enrolled in any courses yet.</p>
+        <a href="/" class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold">Browse Courses</a>
+      </div>
+
+    </div>
+
+    <!-- ===== INSTRUCTOR DASHBOARD ===== -->
+    <div id="instructor-dashboard" class="hidden">
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        <div class="stat-card rounded-2xl p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Courses</p>
+          <p class="text-3xl font-extrabold text-cyan-400" id="stat-courses">0</p>
+        </div>
+        <div class="stat-card rounded-2xl p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Students</p>
+          <p class="text-3xl font-extrabold text-emerald-400" id="stat-students">0</p>
+        </div>
+        <div class="stat-card rounded-2xl p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Lessons</p>
+          <p class="text-3xl font-extrabold text-violet-400" id="stat-lessons">0</p>
+        </div>
+      </div>
+
+      <!-- Create Course -->
+      <div class="create-course-card rounded-2xl p-6 mb-10">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <span class="text-cyan-400">+</span> Create New Course
+        </h2>
+        <div id="create-error" class="hidden mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm"></div>
+        <div id="create-success" class="hidden mb-4 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs text-gray-400 font-medium mb-1 block">Course Title</label>
+            <input type="text" id="new-title" placeholder="e.g. Complete Node.js Bootcamp" class="input-field w-full px-4 py-3 rounded-xl text-sm"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 font-medium mb-1 block">Thumbnail URL</label>
+            <input type="text" id="new-thumbnail" placeholder="https://..." class="input-field w-full px-4 py-3 rounded-xl text-sm"/>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-xs text-gray-400 font-medium mb-1 block">Description</label>
+            <textarea id="new-description" placeholder="What will students learn in this course?" rows="3" class="input-field w-full px-4 py-3 rounded-xl text-sm resize-none"></textarea>
+          </div>
+        </div>
+        <button onclick="createCourse()" id="create-btn" class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold mt-4">
+          Create Course
+        </button>
+      </div>
+
+      <!-- My Courses -->
+      <h2 class="text-xl font-bold mb-4">My Courses</h2>
+      <div id="instructor-courses-loading" class="text-gray-500 text-sm py-4">Loading courses...</div>
+      <div id="instructor-courses" class="hidden space-y-4"></div>
+      <div id="instructor-empty" class="hidden text-center py-10">
+        <p class="text-gray-500">You haven't created any courses yet.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
