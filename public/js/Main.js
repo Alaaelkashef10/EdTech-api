@@ -1,4 +1,6 @@
-const API = 'http://localhost:5000/api';
+const API = window.location.hostname === 'localhost'
+  ? 'http://localhost:5000/api'
+  : '/api';
 
 // Update navbar based on auth state
 function updateNav() {
