@@ -13,6 +13,9 @@ app.use('/api/courses',                    require('./routes/course.routes'));
 app.use('/api/courses/:courseId/lessons',  require('./routes/lesson.routes'));
 app.use('/api/courses/:courseId/progress', require('./routes/progress.routes'));
 
+app.get('/test', (req, res) => {
+  res.json({ success: true, message: 'Server is running' });
+});
 // Error handler
 app.use(require('./middleware/error'));
 
