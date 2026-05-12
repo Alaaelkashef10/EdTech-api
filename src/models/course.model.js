@@ -13,6 +13,6 @@ const courseSchema = new mongoose.Schema({
 courseSchema.index({ instructor_id: 1 });
 
 
-console.log("Sss")
+
 
 module.exports = mongoose.model('Course', courseSchema);
