@@ -1,89 +1,92 @@
-const Course = require('../models/course.model');
+const Course       = require('../models/course.model');
+const asyncHandler = require('../utils/asyncHandler');
+const AppError     = require('../utils/AppError');
 
-// @route GET /api/courses
-const getCourses = async (req, res, next) => {
-  try {
-    const courses = await Course.find()
-      .populate('instructor_id', 'username email');
+/**
+ * @route   GET /api/courses
+ * @access  Public
+ * @desc    Get all available courses
+ */
+const getCourses = asyncHandler(async (req, res) => {
+  const courses = await Course.find().populate('instructor_id', 'username email');
 
-    res.json({ success: true, courses });
-  } catch (error) {
-    next(error);
+  res.json({ success: true, count: courses.length, courses });
+});
+
+/**
+ * @route   GET /api/courses/:courseId
+ * @access  Public
+ * @desc    Get a single course by ID (with instructor and enrolled students)
+ */
+const getCourseById = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId)
+    .populate('instructor_id', 'username email')
+    .populate('students', 'username email');
+
+  if (!course) {
+    throw new AppError('Course not found', 404);
   }
-};
 
-// @route GET /api/courses/:courseId
-const getCourseById = async (req, res, next) => {
-  try {
-    const course = await Course.findById(req.params.courseId)
-      .populate('instructor_id', 'username email')
-      .populate('students', 'username email');
+  res.json({ success: true, course });
+});
 
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
+/**
+ * @route   POST /api/courses
+ * @access  Private (instructor only)
+ * @desc    Create a new course
+ */
+const createCourse = asyncHandler(async (req, res) => {
+  const { title, description, thumbnail } = req.body;
 
-    res.json({ success: true, course });
-  } catch (error) {
-    next(error);
+  const course = await Course.create({
+    title,
+    description,
+    thumbnail,
+    instructor_id: req.user.id,
+  });
+
+  res.status(201).json({ success: true, course });
+});
+
+/**
+ * @route   POST /api/courses/:courseId/enroll
+ * @access  Private
+ * @desc    Enroll the authenticated user in a course
+ */
+const enrollCourse = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
+
+  if (!course) {
+    throw new AppError('Course not found', 404);
   }
-};
 
-// @route POST /api/courses  (instructor only)
-const createCourse = async (req, res, next) => {
-  try {
-    const { title, description, thumbnail } = req.body;
-
-    const course = await Course.create({
-      title,
-      description,
-      thumbnail,
-      instructor_id: req.user.id,
-    });
-
-    res.status(201).json({ success: true, course });
-  } catch (error) {
-    next(error);
+  // Instructors should not enroll in their own courses
+  if (course.instructor_id.toString() === req.user.id) {
+    throw new AppError('Instructors cannot enroll in their own course', 400);
   }
-};
 
-// @route POST /api/courses/:courseId/enroll
-const enrollCourse = async (req, res, next) => {
-  try {
-    const course = await Course.findById(req.params.courseId);
-
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
-
-    if (course.instructor_id.toString() === req.user.id) {
-      return res.status(400).json({ success: false, message: 'Instructors cannot enroll in their own course' });
-    }
-
-    if (course.students.includes(req.user.id)) {
-      return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
-    }
-
-    course.students.push(req.user.id);
-    await course.save();
-
-    res.json({ success: true, message: 'Enrolled successfully' });
-  } catch (error) {
-    next(error);
+  // Prevent duplicate enrollments
+  if (course.students.includes(req.user.id)) {
+    throw new AppError('You are already enrolled in this course', 400);
   }
-};
 
-// @route GET /api/courses/me/courses
-const getMyCourses = async (req, res, next) => {
-  try {
-    const courses = await Course.find({ students: req.user.id })
-      .populate('instructor_id', 'username -_id')
-      .select('-students -__v -updatedAt');
+  course.students.push(req.user.id);
+  await course.save();
 
-    res.json({ success: true, courses });
-  } catch (error) {
-    next(error);
-  }
-};
+  res.json({ success: true, message: 'Enrolled successfully' });
+});
+
+/**
+ * @route   GET /api/courses/me/courses
+ * @access  Private
+ * @desc    Get all courses that the authenticated student is enrolled in
+ */
+const getMyCourses = asyncHandler(async (req, res) => {
+  const courses = await Course.find({ students: req.user.id })
+    .populate('instructor_id', 'username -_id')
+    .select('-students -__v -updatedAt');
+
+  res.json({ success: true, count: courses.length, courses });
+});
 
 module.exports = { getCourses, getCourseById, createCourse, enrollCourse, getMyCourses };

@@ -1,5 +1,5 @@
 const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:5000/api'
+  ? 'http://localhost:3000/api'
   : '/api';
 
 let isInstructor = false;
@@ -101,8 +101,11 @@ async function login() {
 
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
-    window.location.href = '/';
-
+    if (data.user.role === 'admin') {
+      window.location.href = '/admin-dashboard.html';
+    } else {
+      window.location.href = '/dashboard.html';
+    }
   } catch (err) {
     showError('Something went wrong. Try again.');
   } finally {
