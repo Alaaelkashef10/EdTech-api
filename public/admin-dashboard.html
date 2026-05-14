@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — EduFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #080C14;
+    --surface: #0D1321;
+    --surface2:#111827;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text:    #F1F5F9;
+    --muted:   #64748B;
+    --accent:  #38BDF8;
+    --green:   #34D399;
+    --amber:   #FBBF24;
+    --red:     #F87171;
+    --purple:  #A78BFA;
+    --font:    'DM Sans', sans-serif;
+    --mono:    'DM Mono', monospace;
+  }
+  html { font-size: 15px; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+  .shell { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:28px 0; position:sticky; top:0; height:100vh; }
+  .logo { display:flex; align-items:center; gap:10px; padding:0 20px 28px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+  .logo-mark { width:32px; height:32px; background:linear-gradient(135deg,var(--accent),var(--purple)); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; font-weight:600; }
+  .logo-text { font-size:15px; font-weight:600; letter-spacing:-0.01em; }
+  .logo-sub  { font-size:10px; color:var(--muted); font-family:var(--mono); letter-spacing:0.05em; text-transform:uppercase; }
+  .nav-group { padding:0 12px; margin-bottom:8px; }
+  .nav-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; padding:0 8px; margin-bottom:6px; }
+  .nav-item  { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; font-size:13.5px; color:var(--muted); cursor:pointer; transition:all .15s; text-decoration:none; }
+  .nav-item:hover { background:var(--surface2); color:var(--text); }
+  .nav-item.active { background:rgba(56,189,248,.1); color:var(--accent); }
+  .nav-icon  { font-size:17px; line-height:1; }
+  .nav-badge { margin-left:auto; background:rgba(56,189,248,.15); color:var(--accent); font-size:10px; font-family:var(--mono); padding:2px 7px; border-radius:999px; }
+  .sidebar-footer { margin-top:auto; padding:16px 20px 0; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .avatar-sm { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#a855f7); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#fff; flex-shrink:0; }
+  .user-meta { flex:1; overflow:hidden; }
+  .user-meta strong { display:block; font-size:12.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .user-meta span   { font-size:11px; color:var(--muted); }
+
+  /* Main */
+  .main { flex:1; padding:32px 36px; overflow-x:hidden; }
+  .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:32px; }
+  .page-title    { font-size:22px; font-weight:600; letter-spacing:-0.02em; }
+  .page-subtitle { font-size:13px; color:var(--muted); margin-top:3px; }
+  .header-actions { display:flex; gap:10px; align-items:center; }
+  .btn { display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:9px; font-size:13px; font-family:var(--font); font-weight:500; cursor:pointer; border:none; transition:all .15s; text-decoration:none; }
+  .btn-ghost { background:var(--surface2); color:var(--muted); border:1px solid var(--border); }
+  .btn-ghost:hover { color:var(--text); border-color:var(--border2); }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+  /* Stats */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; margin-bottom:32px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; position:relative; overflow:hidden; transition:border-color .2s; }
+  .stat-card:hover { border-color:var(--border2); }
+  .stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 14px 0 80px; opacity:.06; }
+  .stat-card.c-blue::before   { background:var(--accent); }
+  .stat-card.c-green::before  { background:var(--green); }
+  .stat-card.c-purple::before { background:var(--purple); }
+  .stat-card.c-amber::before  { background:var(--amber); }
+  .stat-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:14px; }
+  .stat-card.c-blue   .stat-icon { background:rgba(56,189,248,.12); color:var(--accent); }
+  .stat-card.c-green  .stat-icon { background:rgba(52,211,153,.12); color:var(--green); }
+  .stat-card.c-purple .stat-icon { background:rgba(167,139,250,.12); color:var(--purple); }
+  .stat-card.c-amber  .stat-icon { background:rgba(251,191,36,.12); color:var(--amber); }
+  .stat-label { font-size:12px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em; }
+  .stat-value { font-size:30px; font-weight:600; letter-spacing:-.03em; line-height:1; font-family:var(--mono); }
+  .stat-delta { margin-top:10px; font-size:11.5px; color:var(--muted); min-height:16px; }
+
+  /* Skeleton */
+  .skeleton { background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,.04) 50%,var(--surface2) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  .skel-val { height:30px; width:60px; margin-bottom:10px; }
+
+  /* Table */
+  .table-section { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .table-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:18px 20px; border-bottom:1px solid var(--border); }
+  .table-toolbar h2 { font-size:15px; font-weight:600; }
+  .toolbar-right { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .search-box { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:7px 12px; transition:border-color .15s; }
+  .search-box:focus-within { border-color:var(--accent); }
+  .search-box input { background:none; border:none; outline:none; font-family:var(--font); font-size:13px; color:var(--text); width:180px; }
+  .search-box input::placeholder { color:var(--muted); }
+  .filters { display:flex; gap:6px; }
+  .filter-pill { padding:6px 13px; border-radius:999px; font-size:12px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; font-family:var(--font); }
+  .filter-pill:hover { border-color:var(--border2); color:var(--text); }
+  .filter-pill.active { background:rgba(56,189,248,.12); color:var(--accent); border-color:rgba(56,189,248,.3); }
+  table { width:100%; border-collapse:collapse; }
+  thead th { text-align:left; padding:11px 20px; font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; background:rgba(255,255,255,.02); border-bottom:1px solid var(--border); }
+  tbody tr { border-bottom:1px solid var(--border); transition:background .12s; }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(255,255,255,.02); }
+  td { padding:13px 20px; font-size:13.5px; vertical-align:middle; }
+  .user-cell { display:flex; align-items:center; gap:12px; }
+  .avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; }
+  .av-blue   { background:rgba(56,189,248,.18); color:var(--accent); }
+  .av-green  { background:rgba(52,211,153,.18); color:var(--green); }
+  .av-purple { background:rgba(167,139,250,.18); color:var(--purple); }
+  .av-amber  { background:rgba(251,191,36,.18); color:var(--amber); }
+  .av-red    { background:rgba(248,113,113,.18); color:var(--red); }
+  .av-teal   { background:rgba(45,212,191,.18); color:#2dd4bf; }
+  .uname  { font-weight:500; font-size:13.5px; }
+  .uemail { font-size:11.5px; color:var(--muted); margin-top:1px; }
+  .role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:500; }
+  .role-admin      { background:rgba(56,189,248,.12); color:var(--accent); }
+  .role-instructor { background:rgba(167,139,250,.12); color:var(--purple); }
+  .role-student    { background:rgba(255,255,255,.06); color:var(--muted); }
+  .status-cell { display:flex; align-items:center; gap:7px; font-size:13px; }
+  .status-dot  { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+  .dot-active   { background:var(--green); box-shadow:0 0 0 3px rgba(52,211,153,.2); }
+  .dot-inactive { background:var(--muted); }
+  .mono-sm { font-family:var(--mono); font-size:12px; color:var(--muted); }
+  .action-menu { display:flex; gap:4px; justify-content:flex-end; opacity:.4; transition:opacity .15s; }
+  tbody tr:hover .action-menu { opacity:1; }
+  .icon-btn { width:28px; height:28px; border-radius:7px; background:none; border:1px solid var(--border); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .12s; font-family:var(--font); }
+  .icon-btn:hover { background:var(--surface2); color:var(--text); border-color:var(--border2); }
+  .icon-btn.danger:hover { background:rgba(248,113,113,.1); color:var(--red); border-color:rgba(248,113,113,.3); }
+  .table-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-top:1px solid var(--border); font-size:12.5px; color:var(--muted); flex-wrap:wrap; gap:10px; }
+  .pagination { display:flex; gap:4px; }
+  .pg-btn { min-width:30px; height:30px; padding:0 6px; border-radius:7px; border:1px solid var(--border); background:none; color:var(--muted); font-size:12.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .12s; font-family:var(--font); }
+  .pg-btn:hover { border-color:var(--border2); color:var(--text); }
+  .pg-btn.active { background:var(--accent); border-color:var(--accent); color:#0a1a2e; font-weight:600; }
+  .pg-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+  /* State boxes */
+  .state-box { text-align:center; padding:52px 20px; color:var(--muted); }
+  .state-box .state-icon { font-size:36px; margin-bottom:12px; }
+  .state-box p    { font-size:14px; margin-bottom:8px; }
+  .state-box .hint { font-size:12px; opacity:.6; font-family:var(--mono); }
+
+  /* Spinner */
+  .spinner { width:20px; height:20px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* Toasts */
+  .toast-area { position:fixed; bottom:24px; right:24px; display:flex; flex-direction:column; gap:8px; z-index:100; }
+  .toast { background:var(--surface); border:1px solid var(--border2); border-radius:10px; padding:12px 16px; font-size:13px; display:flex; align-items:center; gap:10px; animation:slideIn .25s ease; max-width:300px; }
+  .toast.t-error   { border-color:rgba(248,113,113,.4); }
+  .toast.t-success { border-color:rgba(52,211,153,.3); }
+  @keyframes slideIn { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:3px; }
+
+  @media(max-width:900px){ .sidebar{display:none} .main{padding:20px} }
+  @media(max-width:600px){
+    .stats-grid{grid-template-columns:1fr 1fr}
+    td:nth-child(3),th:nth-child(3),
+    td:nth-child(4),th:nth-child(4){ display:none }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════ CONFIG (same logic as your config.js) ═══════ -->
+<script>
+  window.API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+    ? 'http://127.0.0.1:3000/api' : '/api';
+</script>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">E</div>
+      <div>
+        <div class="logo-text">EduFlow</div>
+        <div class="logo-sub">Admin</div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a class="nav-item active" href="#">
+        <span class="nav-icon">⊞</span> Dashboard
+        <span class="nav-badge" id="live-badge">Live</span>
+      </a>
+      <a class="nav-item" href="#"><span class="nav-icon">👥</span> Users</a>
+      <a class="nav-item" href="#"><span class="nav-icon">📚</span> Courses</a>
+      <a class="nav-item" href="#"><span class="nav-icon">📊</span> Analytics</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Manage</div>
+      <a class="nav-item" href="#"><span class="nav-icon">💳</span> Payments</a>
+      <a class="nav-item" href="#"><span class="nav-icon">🔔</span> Notifications</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">System</div>
+      <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Settings</a>
+      <a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="avatar-sm" id="sb-avatar">—</div>
+      <div class="user-meta">
+        <strong id="sb-name">—</strong>
+        <span id="sb-role">—</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle" id="page-subtitle">Connecting to database…</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="refresh-btn" onclick="reload()">↻ Refresh</button>
+        <button class="btn btn-ghost" id="export-btn" onclick="exportCSV()" disabled>↓ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stats-grid">
+      <div class="stat-card c-blue">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">Total users</div>
+        <div class="skeleton skel-val" id="sk-users"></div>
+        <div class="stat-value" id="total-users" style="display:none">—</div>
+        <div class="stat-delta" id="d-users"></div>
+      </div>
+      <div class="stat-card c-green">
+        <div class="stat-icon">🎓</div>
+        <div class="stat-label">Students</div>
+        <div class="skeleton skel-val" id="sk-students"></div>
+        <div class="stat-value" id="total-students" style="display:none">—</div>
+        <div class="stat-delta" id="d-students"></div>
+      </div>
+      <div class="stat-card c-purple">
+        <div class="stat-icon">🏫</div>
+        <div class="stat-label">Instructors</div>
+        <div class="skeleton skel-val" id="sk-instructors"></div>
+        <div class="stat-value" id="total-instructors" style="display:none">—</div>
+        <div class="stat-delta" id="d-instructors"></div>
+      </div>
+      <div class="stat-card c-amber">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-label">Admins</div>
+        <div class="skeleton skel-val" id="sk-admins"></div>
+        <div class="stat-value" id="total-admins" style="display:none">—</div>
+        <div class="stat-delta" id="d-admins"></div>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div class="table-section">
+      <div class="table-toolbar">
+        <h2>All users</h2>
+        <div class="toolbar-right">
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" id="search" placeholder="Search name or email…" oninput="filterTable()" />
+          </div>
+          <div class="filters">
+            <button class="filter-pill active" onclick="setRole(this,'all')">All</button>
+            <button class="filter-pill" onclick="setRole(this,'admin')">Admin</button>
+            <button class="filter-pill" onclick="setRole(this,'instructor')">Instructor</button>
+            <button class="filter-pill" onclick="setRole(this,'student')">Student</button>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:33%">User</th>
+            <th style="width:14%">Role</th>
+            <th style="width:14%">Status</th>
+            <th style="width:20%">Joined</th>
+            <th style="width:12%;text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="user-tbody">
+          <tr>
+            <td colspan="5">
+              <div class="state-box">
+                <div><span class="spinner"></span></div>
+                <p style="margin-top:14px">Fetching users from database…</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <span id="row-count">—</span>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-area" id="toasts"></div>
+
+<!-- ═══════════════════════════ SCRIPT ═══════════════════════════ -->
+<script>
+/* ── Auth guard (mirrors your admin.js logic) ── */
+const token = localStorage.getItem('token');
+const user  = JSON.parse(localStorage.getItem('user') || 'null');
+
+if (!token || !user || user.role !== 'admin') {
+  showToast('🔒', 'Access denied — admins only.', 'error');
+  setTimeout(() => { window.location.href = '/'; }, 1500);
+}
+
+/* ── Sidebar: show logged-in user ── */
+const initials = n => (n || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+document.getElementById('sb-avatar').textContent = initials(user?.username || user?.name || '');
+document.getElementById('sb-name').textContent   = user?.username || user?.name || 'Admin';
+document.getElementById('sb-role').textContent   = user?.role || '';
+
+/* ── State ── */
+let ALL_USERS = [], filtered = [], roleFilter = 'all', page = 1;
+const PER     = 10;
+const COLORS  = ['av-blue','av-green','av-purple','av-amber','av-red','av-teal'];
+const colorFor = name => COLORS[(name || '').charCodeAt(0) % COLORS.length];
+
+/* ─────────────────────────────────────────────────────────
+   FETCH — calls your real GET /api/admin/users endpoint
+───────────────────────────────────────────────────────── */
+async function loadDashboard() {
+  setRefreshing(true);
+  try {
+    const res = await fetch(`${window.API_BASE}/admin/users`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    /* Session expired or forbidden */
+    if (res.status === 401 || res.status === 403) {
+      showToast('🔒', 'Session expired — please log in again.', 'error');
+      setTimeout(() => { window.location.href = '/'; }, 2000);
+      return;
+    }
+
+    if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'API returned success: false');
+
+    ALL_USERS = data.users || [];
+    fillStats(ALL_USERS);
+    filterTable();
+    revealStats();
+
+    document.getElementById('export-btn').disabled = false;
+    document.getElementById('page-subtitle').textContent =
+      `${ALL_USERS.length} users · last synced ${new Date().toLocaleTimeString()}`;
+    showToast('✓', `Loaded ${ALL_USERS.length} users`, 'success');
+
+  } catch (err) {
+    console.error('[EduFlow Admin]', err);
+    showTableError(err.message);
+    document.getElementById('page-subtitle').textContent = 'Could not reach database';
+    showToast('⚠', err.message, 'error');
+  } finally {
+    setRefreshing(false);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   STATS — derived from the users array
+   (add a /api/admin/stats call here if your backend has one)
+───────────────────────────────────────────────────────── */
+function fillStats(users) {
+  const total       = users.length;
+  const students    = users.filter(u => u.role === 'student').length;
+  const instructors = users.filter(u => u.role === 'instructor').length;
+  const admins      = users.filter(u => u.role === 'admin').length;
+
+  document.getElementById('total-users').textContent       = total;
+  document.getElementById('total-students').textContent    = students;
+  document.getElementById('total-instructors').textContent = instructors;
+  document.getElementById('total-admins').textContent      = admins;
+
+  const pct = n => total ? Math.round(n / total * 100) + '%' : '—';
+  document.getElementById('d-users').textContent       = `${students} students · ${instructors} instructors · ${admins} admins`;
+  document.getElementById('d-students').textContent    = `${pct(students)} of all users`;
+  document.getElementById('d-instructors').textContent = `${pct(instructors)} of all users`;
+  document.getElementById('d-admins').textContent      = `${pct(admins)} of all users`;
+}
+
+function revealStats() {
+  ['users','students','instructors','admins'].forEach(k => {
+    document.getElementById(`sk-${k}`)?.remove();
+    const el = document.getElementById(`total-${k}`);
+    if (el) el.style.display = '';
+  });
+}
+
+/* ─────────────────────────────────────────────────────────
+   FILTER / SEARCH
+───────────────────────────────────────────────────────── */
+function setRole(btn, role) {
+  roleFilter = role; page = 1;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterTable();
+}
+
+function filterTable() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  filtered = ALL_USERS.filter(u => {
+    const name  = (u.username || u.name || '').toLowerCase();
+    const email = (u.email || '').toLowerCase();
+    const matchRole = roleFilter === 'all' || u.role === roleFilter;
+    const matchQ    = name.includes(q) || email.includes(q);
+    return matchRole && matchQ;
+  });
+  page = 1;
+  renderTable();
+}
+
+/* ─────────────────────────────────────────────────────────
+   RENDER TABLE ROWS
+───────────────────────────────────────────────────────── */
+function renderTable() {
+  const tbody = document.getElementById('user-tbody');
+  const total = filtered.length;
+  const start = (page - 1) * PER;
+  const slice = filtered.slice(start, start + PER);
+
+  document.getElementById('row-count').textContent = total === 0
+    ? 'No users found'
+    : `Showing ${start + 1}–${Math.min(start + PER, total)} of ${total} users`;
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="5">
+      <div class="state-box">
+        <div class="state-icon">🔍</div>
+        <p>No users match your filter</p>
+        <div class="hint">Try a different name, email, or role</div>
+      </div>
+    </td></tr>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = slice.map(u => {
+    /* Support both common field names from different backends */
+    const name   = u.username || u.name || 'Unknown';
+    const email  = u.email || '—';
+    const role   = u.role  || 'student';
+
+    /* Status: check isActive (boolean) then status (string) then default active */
+    const isActive = u.isActive !== undefined ? u.isActive
+                   : u.status !== undefined   ? u.status === 'active'
+                   : true;
+
+    /* Date: accept createdAt (ISO), joined (string) */
+    const joined = u.createdAt
+      ? new Date(u.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+      : u.joined || '—';
+
+    const roleIcon = role === 'admin' ? '⬡' : role === 'instructor' ? '◈' : '○';
+    const uid = esc(u._id || u.id || '');
+
+    return `<tr>
+      <td>
+        <div class="user-cell">
+          <div class="avatar ${colorFor(name)}">${initials(name)}</div>
+          <div>
+            <div class="uname">${esc(name)}</div>
+            <div class="uemail">${esc(email)}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="role-badge role-${role}">${roleIcon} ${cap(role)}</span></td>
+      <td>
+        <div class="status-cell">
+          <div class="status-dot ${isActive ? 'dot-active' : 'dot-inactive'}"></div>
+          ${isActive ? 'Active' : 'Inactive'}
+        </div>
+      </td>
+      <td><span class="mono-sm">${joined}</span></td>
+      <td>
+        <div class="action-menu">
+          <button class="icon-btn" title="Edit" onclick="showToast('✎','Editing ${esc(name.split(' ')[0])}…')">✎</button>
+          <button class="icon-btn danger" title="Delete" onclick="confirmDelete('${uid}','${esc(name)}')">✕</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / PER);
+  const pg = document.getElementById('pagination');
+  if (pages <= 1) { pg.innerHTML = ''; return; }
+  let h = `<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>‹</button>`;
+  for (let i = 1; i <= pages; i++)
+    h += `<button class="pg-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  h += `<button class="pg-btn" onclick="goPage(${page+1})" ${page===pages?'disabled':''}>›</button>`;
+  pg.innerHTML = h;
+}
+
+function goPage(p) {
+  const pages = Math.ceil(filtered.length / PER);
+  if (p < 1 || p > pages) return;
+  page = p; renderTable();
+}
+
+/* ─────────────────────────────────────────────────────────
+   DELETE USER  — calls DELETE /api/admin/users/:id
+───────────────────────────────────────────────────────── */
+async function confirmDelete(id, name) {
+  if (!id) { showToast('⚠', 'No user ID — cannot delete', 'error'); return; }
+  if (!confirm(`Remove "${name}"? This cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${window.API_BASE}/admin/users/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error(`Delete failed (${res.status})`);
+    ALL_USERS = ALL_USERS.filter(u => (u._id || u.id) !== id);
+    fillStats(ALL_USERS);
+    filterTable();
+    showToast('✓', `"${name}" removed`, 'success');
+  } catch (err) {
+    showToast('✕', err.message, 'error');
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   EXPORT CSV
+───────────────────────────────────────────────────────── */
+function exportCSV() {
+  const rows = [['Name','Email','Role','Status','Joined']];
+  filtered.forEach(u => {
+    const name   = u.username || u.name || '';
+    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : u.joined || '';
+    const status = u.isActive !== undefined ? (u.isActive ? 'active' : 'inactive') : u.status || '';
+    rows.push([name, u.email||'', u.role||'', status, joined]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `eduflow-users-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('✓', `Exported ${filtered.length} users`, 'success');
+}
+
+/* ── Error state in table ── */
+function showTableError(msg) {
+  document.getElementById('user-tbody').innerHTML = `<tr><td colspan="5">
+    <div class="state-box">
+      <div class="state-icon">⚠️</div>
+      <p>${esc(msg)}</p>
+      <div class="hint">Check your server connection or JWT token</div>
+      <br>
+      <button class="btn btn-ghost" onclick="reload()" style="margin:auto;margin-top:12px">↻ Retry</button>
+    </div>
+  </td></tr>`;
+  document.getElementById('row-count').textContent = 'Failed to load';
+}
+
+/* ── Refresh ── */
+function reload() { page = 1; filterTable(); loadDashboard(); }
+function setRefreshing(v) {
+  const btn = document.getElementById('refresh-btn');
+  btn.innerHTML = v ? '<span class="spinner"></span> Loading…' : '↻ Refresh';
+  btn.disabled  = v;
+  document.getElementById('live-badge').textContent = v ? '…' : 'Live';
+}
+
+/* ── Logout ── */
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/';
+}
+
+/* ── Toasts ── */
+function showToast(icon, msg, type = '') {
+  const area = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast${type ? ' t-' + type : ''}`;
+  t.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
+  area.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+/* ── Helpers ── */
+const esc = s => String(s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+/* ── Boot ── */
+loadDashboard();
+</script>
+
+</body>
+</html>
