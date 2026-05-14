@@ -1,0 +1,4 @@
+node_modules/
+.env
+.DS_Store
+*07.48.50/
