@@ -1,11 +1,21 @@
-const API = 'http://localhost:5000/api';
-const token = localStorage.getItem('token');
-const user = JSON.parse(localStorage.getItem('user') || 'null');
+/**
+ * dashboard.js – Handles both Student and Instructor dashboard views.
+ * Uses a dynamic API base URL so it works in both dev (localhost:3000) and production.
+ */
 
-// Redirect if not logged in
+const API   = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000/api'
+  : '/api';
+
+const token = localStorage.getItem('token');
+const user  = JSON.parse(localStorage.getItem('user') || 'null');
+
+// ── Guard ────────────────────────────────────────────────────────────────────
 if (!token || !user) {
   window.location.href = '/login.html';
 }
+
+// ── Utility helpers ──────────────────────────────────────────────────────────
 
 function logout() {
   localStorage.removeItem('token');
@@ -15,21 +25,42 @@ function logout() {
 
 function authHeaders() {
   return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
+    'Content-Type':  'application/json',
+    'Authorization': `Bearer ${token}`,
   };
 }
 
-// Init
+/** Show a toast notification at the top-right of the screen */
+function showToast(message, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Slide in
+  requestAnimationFrame(() => toast.classList.add('toast-visible'));
+
+  // Auto-dismiss after 3 s
+  setTimeout(() => {
+    toast.classList.remove('toast-visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+
 function init() {
   document.getElementById('nav-username').textContent = user.username;
 
   if (user.is_instructor) {
-    document.getElementById('dashboard-title').textContent = 'Instructor Dashboard';
+    document.getElementById('dashboard-title').textContent    = 'Instructor Dashboard';
     document.getElementById('dashboard-subtitle').textContent = 'Manage your courses and track student progress';
     loadInstructorDashboard();
   } else {
-    document.getElementById('dashboard-title').textContent = 'My Learning';
+    document.getElementById('dashboard-title').textContent    = 'My Learning';
     document.getElementById('dashboard-subtitle').textContent = 'Track your progress and continue learning';
     loadStudentDashboard();
   }
@@ -37,36 +68,39 @@ function init() {
   document.getElementById('dashboard-loading').classList.add('hidden');
 }
 
-// ===== STUDENT =====
+// ── STUDENT DASHBOARD ────────────────────────────────────────────────────────
+
 async function loadStudentDashboard() {
   document.getElementById('student-dashboard').classList.remove('hidden');
 
-  try {
-    const res = await fetch(`${API}/courses/me/courses`, { headers: authHeaders() });
-    const data = await res.json();
+  const loading = document.getElementById('student-courses-loading');
+  const grid    = document.getElementById('student-courses');
+  const empty   = document.getElementById('student-empty');
 
-    const loading = document.getElementById('student-courses-loading');
-    const grid = document.getElementById('student-courses');
-    const empty = document.getElementById('student-empty');
+  try {
+    const res  = await fetch(`${API}/courses/me/courses`, { headers: authHeaders() });
+    const data = await res.json();
 
     loading.classList.add('hidden');
 
-    if (!data.success || data.courses.length === 0) {
+    if (!data.success || !data.courses || data.courses.length === 0) {
       empty.classList.remove('hidden');
-      document.getElementById('stat-enrolled').textContent = '0';
+      document.getElementById('stat-enrolled').textContent   = '0';
+      document.getElementById('stat-completed').textContent  = '0';
+      document.getElementById('stat-inprogress').textContent = '0';
       return;
     }
 
     const courses = data.courses;
     document.getElementById('stat-enrolled').textContent = courses.length;
 
-    // Load progress for each course
+    // Fetch progress for each enrolled course in parallel
     const progressData = await Promise.all(
       courses.map(async (course) => {
         try {
-          const res = await fetch(`${API}/courses/${course._id}/progress`, { headers: authHeaders() });
-          const data = await res.json();
-          return { courseId: course._id, percentage: data.percentage || 0 };
+          const r = await fetch(`${API}/courses/${course._id}/progress`, { headers: authHeaders() });
+          const d = await r.json();
+          return { courseId: course._id, percentage: d.percentage ?? 0 };
         } catch {
           return { courseId: course._id, percentage: 0 };
         }
@@ -74,33 +108,36 @@ async function loadStudentDashboard() {
     );
 
     const progressMap = {};
-    progressData.forEach(p => progressMap[p.courseId] = p.percentage);
+    progressData.forEach(p => (progressMap[p.courseId] = p.percentage));
 
-    const completed = progressData.filter(p => p.percentage === 100).length;
+    const completed  = progressData.filter(p => p.percentage === 100).length;
     const inProgress = progressData.filter(p => p.percentage > 0 && p.percentage < 100).length;
 
-    document.getElementById('stat-completed').textContent = completed;
+    document.getElementById('stat-completed').textContent  = completed;
     document.getElementById('stat-inprogress').textContent = inProgress;
 
     grid.classList.remove('hidden');
     grid.innerHTML = courses.map(course => {
-      const pct = progressMap[course._id] || 0;
-      const thumbnail = course.thumbnail || 'https://via.placeholder.com/400x200/0f172a/06b6d4?text=Course';
+      const pct       = progressMap[course._id] ?? 0;
+      const thumbnail = course.thumbnail || 'https://placehold.co/400x200/0f172a/06b6d4?text=Course';
+      const pctColor  = pct === 100 ? 'text-emerald-400' : 'text-cyan-400';
 
       return `
         <div class="course-card" onclick="window.location.href='/course.html?id=${course._id}'">
-          <img src="${thumbnail}" alt="${course.title}" onerror="this.src='https://via.placeholder.com/400x200/0f172a/06b6d4?text=Course'"/>
+          <img src="${thumbnail}" alt="${course.title}"
+            onerror="this.src='https://placehold.co/400x200/0f172a/06b6d4?text=Course'"/>
           <div class="course-card-body">
             <h3 class="course-card-title">${course.title}</h3>
             <p class="course-card-instructor">by ${course.instructor_id?.username || 'Unknown'}</p>
             <div class="mt-3">
               <div class="flex items-center justify-between mb-1">
                 <span class="text-xs text-gray-500">Progress</span>
-                <span class="text-xs font-semibold ${pct === 100 ? 'text-emerald-400' : 'text-cyan-400'}">${pct}%</span>
+                <span class="text-xs font-semibold ${pctColor}">${pct}%</span>
               </div>
               <div class="progress-bar-bg rounded-full h-1.5">
                 <div class="progress-bar-fill h-1.5 rounded-full" style="width:${pct}%"></div>
               </div>
+              ${pct === 100 ? '<p class="text-xs text-emerald-400 mt-1">🎉 Completed!</p>' : ''}
             </div>
           </div>
         </div>
@@ -108,67 +145,79 @@ async function loadStudentDashboard() {
     }).join('');
 
   } catch (err) {
-    document.getElementById('student-courses-loading').textContent = 'Failed to load courses.';
+    loading.textContent = 'Failed to load courses. Is the server running?';
+    loading.classList.remove('hidden');
+    loading.classList.add('text-red-400');
   }
 }
 
-// ===== INSTRUCTOR =====
+// ── INSTRUCTOR DASHBOARD ─────────────────────────────────────────────────────
+
 async function loadInstructorDashboard() {
   document.getElementById('instructor-dashboard').classList.remove('hidden');
 
-  try {
-    const res = await fetch(`${API}/courses`, { headers: authHeaders() });
-    const data = await res.json();
+  const loading   = document.getElementById('instructor-courses-loading');
+  const container = document.getElementById('instructor-courses');
+  const empty     = document.getElementById('instructor-empty');
 
-    const loading = document.getElementById('instructor-courses-loading');
-    const container = document.getElementById('instructor-courses');
-    const empty = document.getElementById('instructor-empty');
+  try {
+    const res  = await fetch(`${API}/courses`, { headers: authHeaders() });
+    const data = await res.json();
 
     loading.classList.add('hidden');
 
-    // Filter only my courses
-    const myCourses = data.courses.filter(c => c.instructor_id?._id === user.id);
+    // Filter to only this instructor's courses
+    const myCourses = (data.courses || []).filter(c => {
+      const instructorId = c.instructor_id?._id || c.instructor_id;
+      return String(instructorId) === String(user.id);
+    });
 
     if (myCourses.length === 0) {
       empty.classList.remove('hidden');
+      document.getElementById('stat-courses').textContent  = '0';
+      document.getElementById('stat-students').textContent = '0';
+      document.getElementById('stat-lessons').textContent  = '0';
       return;
     }
 
     const totalStudents = myCourses.reduce((sum, c) => sum + (c.students?.length || 0), 0);
-
-    document.getElementById('stat-courses').textContent = myCourses.length;
+    document.getElementById('stat-courses').textContent  = myCourses.length;
     document.getElementById('stat-students').textContent = totalStudents;
 
-    // Count total lessons
+    // Count lessons across all courses
     let totalLessons = 0;
-    await Promise.all(myCourses.map(async (course) => {
-      try {
-        const res = await fetch(`${API}/courses/${course._id}/lessons`, { headers: authHeaders() });
-        const data = await res.json();
-        totalLessons += data.lessons?.length || 0;
-      } catch {}
-    }));
-
+    await Promise.all(
+      myCourses.map(async (course) => {
+        try {
+          const r = await fetch(`${API}/courses/${course._id}/lessons`, { headers: authHeaders() });
+          const d = await r.json();
+          totalLessons += d.lessons?.length || 0;
+        } catch {}
+      })
+    );
     document.getElementById('stat-lessons').textContent = totalLessons;
 
     container.classList.remove('hidden');
     container.innerHTML = myCourses.map(course => renderInstructorCourse(course)).join('');
 
   } catch (err) {
-    document.getElementById('instructor-courses-loading').textContent = 'Failed to load courses.';
+    loading.textContent = 'Failed to load courses. Is the server running?';
+    loading.classList.remove('hidden');
+    loading.classList.add('text-red-400');
   }
 }
 
 function renderInstructorCourse(course) {
-  const thumbnail = course.thumbnail || 'https://via.placeholder.com/400x200/0f172a/06b6d4?text=Course';
-  const students = course.students?.length || 0;
+  const thumbnail = course.thumbnail || 'https://placehold.co/400x200/0f172a/06b6d4?text=Course';
+  const students  = course.students?.length || 0;
+  const created   = new Date(course.createdAt).toLocaleDateString();
 
   return `
     <div class="instructor-course-card rounded-2xl overflow-hidden">
       <div class="flex flex-col md:flex-row">
         <img src="${thumbnail}" alt="${course.title}"
           class="w-full md:w-48 h-36 object-cover flex-shrink-0"
-          onerror="this.src='https://via.placeholder.com/400x200/0f172a/06b6d4?text=Course'"/>
+          onerror="this.src='https://placehold.co/400x200/0f172a/06b6d4?text=Course'"/>
         <div class="p-5 flex-1">
           <div class="flex items-start justify-between gap-4">
             <div>
@@ -177,7 +226,8 @@ function renderInstructorCourse(course) {
             </div>
             <div class="flex gap-2 flex-shrink-0">
               <a href="/course.html?id=${course._id}" class="btn-ghost text-xs px-3 py-2 rounded-lg">View</a>
-              <button onclick="viewStudents('${course._id}', '${course.title}')" class="btn-primary text-xs px-3 py-2 rounded-lg">
+              <button onclick="toggleStudentsPanel('${course._id}')"
+                class="btn-primary text-xs px-3 py-2 rounded-lg">
                 Students (${students})
               </button>
             </div>
@@ -187,39 +237,38 @@ function renderInstructorCourse(course) {
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
               </svg>
-              ${students} students enrolled
+              ${students} enrolled
             </span>
-            <span class="text-xs text-gray-500">Created ${new Date(course.createdAt).toLocaleDateString()}</span>
+            <span class="text-xs text-gray-500">Created ${created}</span>
           </div>
         </div>
       </div>
 
-      <!-- Students Progress Panel (hidden by default) -->
+      <!-- Students panel (toggle) -->
       <div id="students-panel-${course._id}" class="hidden border-t border-gray-800 p-5">
         <h4 class="text-sm font-semibold mb-3 text-gray-300">Enrolled Students & Progress</h4>
-        <div id="students-list-${course._id}" class="space-y-2">
-          <p class="text-gray-500 text-sm">Loading...</p>
+        <div id="students-list-${course._id}">
+          <p class="text-gray-500 text-sm">Loading…</p>
         </div>
       </div>
     </div>
   `;
 }
 
-// View students progress
-async function viewStudents(courseId, courseTitle) {
+async function toggleStudentsPanel(courseId) {
   const panel = document.getElementById(`students-panel-${courseId}`);
-  const list = document.getElementById(`students-list-${courseId}`);
+  const list  = document.getElementById(`students-list-${courseId}`);
 
-  // Toggle
   if (!panel.classList.contains('hidden')) {
     panel.classList.add('hidden');
     return;
   }
 
   panel.classList.remove('hidden');
+  list.innerHTML = '<p class="text-gray-500 text-sm">Loading…</p>';
 
   try {
-    const res = await fetch(`${API}/courses/${courseId}/progress`, { headers: authHeaders() });
+    const res  = await fetch(`${API}/courses/${courseId}/progress`, { headers: authHeaders() });
     const data = await res.json();
 
     if (!data.success) {
@@ -227,7 +276,7 @@ async function viewStudents(courseId, courseTitle) {
       return;
     }
 
-    if (data.totalStudents === 0) {
+    if (!data.studentsProgress || data.studentsProgress.length === 0) {
       list.innerHTML = '<p class="text-gray-500 text-sm">No students enrolled yet.</p>';
       return;
     }
@@ -249,23 +298,26 @@ async function viewStudents(courseId, courseTitle) {
               <div class="progress-bar-fill h-1.5 rounded-full" style="width:${sp.percentage}%"></div>
             </div>
           </div>
-          <span class="text-xs font-semibold w-8 text-right ${sp.percentage === 100 ? 'text-emerald-400' : 'text-cyan-400'}">${sp.percentage}%</span>
+          <span class="text-xs font-semibold w-12 text-right ${sp.percentage === 100 ? 'text-emerald-400' : 'text-cyan-400'}">
+            ${sp.percentage}%
+          </span>
         </div>
       </div>
     `).join('');
 
   } catch (err) {
-    list.innerHTML = '<p class="text-red-400 text-sm">Failed to load students.</p>';
+    list.innerHTML = '<p class="text-red-400 text-sm">Failed to load student data.</p>';
   }
 }
 
-// Create course
-async function createCourse() {
-  const title = document.getElementById('new-title').value.trim();
-  const description = document.getElementById('new-description').value.trim();
-  const thumbnail = document.getElementById('new-thumbnail').value.trim();
+// ── CREATE COURSE ────────────────────────────────────────────────────────────
 
-  const errorEl = document.getElementById('create-error');
+async function createCourse() {
+  const title       = document.getElementById('new-title').value.trim();
+  const description = document.getElementById('new-description').value.trim();
+  const thumbnail   = document.getElementById('new-thumbnail').value.trim();
+
+  const errorEl   = document.getElementById('create-error');
   const successEl = document.getElementById('create-success');
 
   errorEl.classList.add('hidden');
@@ -278,46 +330,45 @@ async function createCourse() {
   }
 
   const btn = document.getElementById('create-btn');
-  btn.textContent = 'Creating...';
+  btn.textContent = 'Creating…';
   btn.disabled = true;
 
   try {
-    const res = await fetch(`${API}/courses`, {
-      method: 'POST',
+    const res  = await fetch(`${API}/courses`, {
+      method:  'POST',
       headers: authHeaders(),
-      body: JSON.stringify({ title, description, thumbnail }),
+      body:    JSON.stringify({ title, description, thumbnail }),
     });
-
     const data = await res.json();
 
     if (!data.success) {
-      errorEl.textContent = data.errors ? data.errors.map(e => e.message).join(', ') : data.message;
+      errorEl.textContent = data.errors
+        ? data.errors.map(e => e.message).join(', ')
+        : (data.message || 'Failed to create course.');
       errorEl.classList.remove('hidden');
       return;
     }
 
-    successEl.textContent = `Course "${data.course.title}" created successfully!`;
-    successEl.classList.remove('hidden');
-
-    // Clear form
-    document.getElementById('new-title').value = '';
+    // Show success and reload the list
+    showToast(`Course "${data.course.title}" created!`);
+    document.getElementById('new-title').value       = '';
     document.getElementById('new-description').value = '';
-    document.getElementById('new-thumbnail').value = '';
+    document.getElementById('new-thumbnail').value   = '';
 
-    // Reload courses
     setTimeout(() => {
       document.getElementById('instructor-courses-loading').classList.remove('hidden');
       document.getElementById('instructor-courses').classList.add('hidden');
       loadInstructorDashboard();
-    }, 1000);
+    }, 800);
 
   } catch (err) {
-    errorEl.textContent = 'Something went wrong. Try again.';
+    errorEl.textContent = 'Something went wrong. Please try again.';
     errorEl.classList.remove('hidden');
   } finally {
     btn.textContent = 'Create Course';
-    btn.disabled = false;
+    btn.disabled    = false;
   }
 }
 
+// ── Bootstrap ────────────────────────────────────────────────────────────────
 init();

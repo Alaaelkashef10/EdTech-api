@@ -1,64 +1,70 @@
-const Lesson = require('../models/lesson.model');
-const Course = require('../models/course.model');
+const Lesson       = require('../models/lesson.model');
+const Course       = require('../models/course.model');
+const asyncHandler = require('../utils/asyncHandler');
+const AppError     = require('../utils/AppError');
 
-const getLessons = async (req, res, next) => {
-  try {
-    const course = await Course.findById(req.params.courseId);
+/**
+ * @route   GET /api/courses/:courseId/lessons
+ * @access  Private
+ * @desc    Get all lessons for a course.
+ *          - Instructors and enrolled students see the full content.
+ *          - Non-enrolled users see titles only (content is locked).
+ */
+const getLessons = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
 
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
-
-    const isInstructor = course.instructor_id.toString() === req.user.id;
-    const isEnrolled = course.students.includes(req.user.id);
-
-    const lessons = await Lesson.find({ course_id: req.params.courseId })
-      .sort({ order: 1 });
-
-    // If not enrolled and not instructor, hide content
-    const result = lessons.map((lesson) => ({
-      _id: lesson._id,
-      title: lesson.title,
-      order: lesson.order,
-      thumbnail: lesson.thumbnail,
-      createdAt: lesson.createdAt,
-      // only show content if enrolled or instructor
-      content: isEnrolled || isInstructor ? lesson.content : null,
-      locked: !isEnrolled && !isInstructor,
-    }));
-
-    res.json({ success: true, lessons: result });
-  } catch (error) {
-    next(error);
+  if (!course) {
+    throw new AppError('Course not found', 404);
   }
-};
 
-const createLesson = async (req, res, next) => {
-  try {
-    const course = await Course.findById(req.params.courseId);
+  const isInstructor = course.instructor_id.toString() === req.user.id;
+  const isEnrolled   = course.students.some((id) => id.toString() === req.user.id);
+  const hasAccess    = isInstructor || isEnrolled;
 
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
+  const lessons = await Lesson.find({ course_id: req.params.courseId }).sort({ order: 1 });
 
-    if (course.instructor_id.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: 'You can only add lessons to your own courses' });
-    }
+  // Hide lesson content from users who are not enrolled
+  const result = lessons.map((lesson) => ({
+    _id:       lesson._id,
+    title:     lesson.title,
+    order:     lesson.order,
+    thumbnail: lesson.thumbnail,
+    createdAt: lesson.createdAt,
+    content:   hasAccess ? lesson.content : null,
+    locked:    !hasAccess,
+  }));
 
-    const { title, content, order, thumbnail } = req.body;
+  res.json({ success: true, count: result.length, lessons: result });
+});
 
-    const lesson = await Lesson.create({
-      course_id: req.params.courseId,
-      title,
-      content,
-      order,
-      thumbnail,
-    });
+/**
+ * @route   POST /api/courses/:courseId/lessons
+ * @access  Private (instructor who owns the course)
+ * @desc    Add a new lesson to a course
+ */
+const createLesson = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
 
-    res.status(201).json({ success: true, lesson });
-  } catch (error) {
-    next(error);
+  if (!course) {
+    throw new AppError('Course not found', 404);
   }
-};
+
+  // Only the course's own instructor can add lessons
+  if (course.instructor_id.toString() !== req.user.id) {
+    throw new AppError('You can only add lessons to your own courses', 403);
+  }
+
+  const { title, content, order, thumbnail } = req.body;
+
+  const lesson = await Lesson.create({
+    course_id: req.params.courseId,
+    title,
+    content,
+    order,
+    thumbnail,
+  });
+
+  res.status(201).json({ success: true, lesson });
+});
 
 module.exports = { getLessons, createLesson };

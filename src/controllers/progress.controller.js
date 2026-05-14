@@ -1,129 +1,128 @@
-const Progress = require('../models/progress.model');
-const Lesson = require('../models/lesson.model');
-const Course = require('../models/course.model');
+const Progress     = require('../models/progress.model');
+const Lesson       = require('../models/lesson.model');
+const Course       = require('../models/course.model');
+const asyncHandler = require('../utils/asyncHandler');
+const AppError     = require('../utils/AppError');
 
-// @route GET /api/courses/:courseId/progress
-// Student sees his own progress, instructor sees all students progress
-const getProgress = async (req, res, next) => {
-  try {
-    const course = await Course.findById(req.params.courseId)
-      .populate('students', 'username email');
+// ─── Helper ───────────────────────────────────────────────────────────────────
 
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
+/**
+ * Calculate the completion percentage for a student in a course.
+ * @param {string}   studentId  - Student's ObjectId
+ * @param {string[]} lessonIds  - All lesson ObjectIds in the course
+ * @returns {Object} { completedCount, totalLessons, percentage }
+ */
+const calcProgress = async (studentId, lessonIds) => {
+  const totalLessons = lessonIds.length;
 
-    const isInstructor = course.instructor_id.toString() === req.user.id;
-    const isEnrolled = course.students.some(s => s._id.toString() === req.user.id);
+  const progressRecords = await Progress.find({
+    student_id: studentId,
+    lesson_id:  { $in: lessonIds },
+  });
 
-    if (!isInstructor && !isEnrolled) {
-      return res.status(403).json({ success: false, message: 'Access denied' });
-    }
+  const completedCount = progressRecords.filter((p) => p.completed).length;
+  const percentage     = totalLessons
+    ? Math.round((completedCount / totalLessons) * 100)
+    : 0;
 
-    const lessons = await Lesson.find({ course_id: req.params.courseId });
-    const totalLessons = lessons.length;
-    const lessonIds = lessons.map((l) => l._id);
-
-    // Instructor sees all students progress
-    if (isInstructor) {
-      const studentsProgress = await Promise.all(
-        course.students.map(async (student) => {
-          const progress = await Progress.find({
-            student_id: student._id,
-            lesson_id: { $in: lessonIds },
-          });
-
-          const completedCount = progress.filter((p) => p.completed).length;
-          const percentage = totalLessons
-            ? Math.round((completedCount / totalLessons) * 100)
-            : 0;
-
-          return {
-            student: {
-              id: student._id,
-              username: student.username,
-              email: student.email,
-            },
-            percentage,
-            completedCount,
-            totalLessons,
-            progress,
-          };
-        })
-      );
-
-      return res.json({
-        success: true,
-        course: course.title,
-        totalStudents: course.students.length,
-        studentsProgress,
-      });
-    }
-
-    // Student sees his own progress
-    const progress = await Progress.find({
-      student_id: req.user.id,
-      lesson_id: { $in: lessonIds },
-    });
-
-    const completedCount = progress.filter((p) => p.completed).length;
-    const percentage = totalLessons
-      ? Math.round((completedCount / totalLessons) * 100)
-      : 0;
-
-    res.json({
-      success: true,
-      percentage,
-      completedCount,
-      totalLessons,
-      progress,
-    });
-  } catch (error) {
-    next(error);
-  }
+  return { completedCount, totalLessons, percentage, progressRecords };
 };
 
-// @route POST /api/courses/:courseId/progress/:lessonId
-const updateProgress = async (req, res, next) => {
-  try {
-    const course = await Course.findById(req.params.courseId);
+// ─── Controllers ──────────────────────────────────────────────────────────────
 
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
+/**
+ * @route   GET /api/courses/:courseId/progress
+ * @access  Private
+ * @desc    Get progress for a course.
+ *          - Students see their own progress.
+ *          - Instructors see all students' progress.
+ */
+const getProgress = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId).populate('students', 'username email');
 
-    const isEnrolled = course.students.includes(req.user.id);
-    if (!isEnrolled) {
-      return res.status(403).json({ success: false, message: 'You must be enrolled in this course to update progress' });
-    }
+  if (!course) {
+    throw new AppError('Course not found', 404);
+  }
 
-    const lesson = await Lesson.findById(req.params.lessonId);
-    if (!lesson) {
-      return res.status(404).json({ success: false, message: 'Lesson not found' });
-    }
+  const isInstructor = course.instructor_id.toString() === req.user.id;
+  const isEnrolled   = course.students.some((s) => s._id.toString() === req.user.id);
 
-    if (lesson.course_id.toString() !== req.params.courseId) {
-      return res.status(400).json({ success: false, message: 'Lesson does not belong to this course' });
-    }
+  if (!isInstructor && !isEnrolled) {
+    throw new AppError('Access denied. You must be enrolled in this course.', 403);
+  }
 
-    const { completed } = req.body;
+  const lessons    = await Lesson.find({ course_id: req.params.courseId }).select('_id');
+  const lessonIds  = lessons.map((l) => l._id);
 
-    const progress = await Progress.findOneAndUpdate(
-      {
-        student_id: req.user.id,
-        lesson_id: req.params.lessonId,
-      },
-      {
-        completed,
-        completed_at: completed ? new Date() : null,
-      },
-      { upsert: true, new: true }
+  // ── Instructor view: all students ──────────────────────────────────────────
+  if (isInstructor) {
+    const studentsProgress = await Promise.all(
+      course.students.map(async (student) => {
+        const { completedCount, totalLessons, percentage } = await calcProgress(student._id, lessonIds);
+
+        return {
+          student: { id: student._id, username: student.username, email: student.email },
+          percentage,
+          completedCount,
+          totalLessons,
+        };
+      })
     );
 
-    res.json({ success: true, progress });
-  } catch (error) {
-    next(error);
+    return res.json({
+      success:       true,
+      course:        course.title,
+      totalStudents: course.students.length,
+      studentsProgress,
+    });
   }
-};
+
+  // ── Student view: own progress ─────────────────────────────────────────────
+  const { completedCount, totalLessons, percentage, progressRecords } = await calcProgress(
+    req.user.id,
+    lessonIds
+  );
+
+  res.json({ success: true, percentage, completedCount, totalLessons, progress: progressRecords });
+});
+
+/**
+ * @route   POST /api/courses/:courseId/progress/:lessonId
+ * @access  Private (enrolled students only)
+ * @desc    Mark a lesson as completed or incomplete
+ */
+const updateProgress = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
+
+  if (!course) {
+    throw new AppError('Course not found', 404);
+  }
+
+  if (!course.students.includes(req.user.id)) {
+    throw new AppError('You must be enrolled in this course to update progress', 403);
+  }
+
+  const lesson = await Lesson.findById(req.params.lessonId);
+
+  if (!lesson) {
+    throw new AppError('Lesson not found', 404);
+  }
+
+  // Verify the lesson belongs to the requested course
+  if (lesson.course_id.toString() !== req.params.courseId) {
+    throw new AppError('Lesson does not belong to this course', 400);
+  }
+
+  const { completed } = req.body;
+
+  // upsert: create a new record if one doesn't exist yet
+  const progress = await Progress.findOneAndUpdate(
+    { student_id: req.user.id, lesson_id: req.params.lessonId },
+    { completed, completed_at: completed ? new Date() : null },
+    { upsert: true, new: true }
+  );
+
+  res.json({ success: true, progress });
+});
 
 module.exports = { getProgress, updateProgress };
