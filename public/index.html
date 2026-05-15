@@ -8,17 +8,92 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/css/style.css">
+  
+  <style>
+  /* Nav — matches student dashboard exactly */
+  nav { 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    z-index: 100; 
+    background: rgba(8,12,20,.85); 
+    backdrop-filter: blur(18px); 
+    border-bottom: 1px solid rgba(255,255,255,0.07); 
+    padding: 0 2rem; 
+    height: 64px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+  }
+  .logo { 
+    font-weight: 700; 
+    font-size: 1.3rem; 
+    color: #38BDF8; 
+    text-decoration: none; 
+  }
+  .logo span { color: #fff; }
+  .nav-links { 
+    display: flex; 
+    gap: 2rem; 
+    align-items: center; 
+  }
+  .nav-link { 
+    color: #64748B; 
+    text-decoration: none; 
+    font-size: .9rem; 
+    font-weight: 500; 
+    transition: color .2s; 
+  }
+  .nav-link:hover, 
+  .nav-link.active { 
+    color: #F1F5F9; 
+  }
+  .nav-user { 
+    font-size: .85rem; 
+    color: #64748B; 
+  }
+  .nav-user strong { 
+    color: #F1F5F9; 
+  }
+  .btn-ghost-nav { 
+    background: transparent; 
+    border: 1px solid rgba(255,255,255,0.07); 
+    color: #64748B; 
+    padding: .45rem 1.1rem; 
+    border-radius: 10px; 
+    font-size: .82rem; 
+    cursor: pointer; 
+    font-family: 'DM Sans', sans-serif; 
+    transition: all .2s; 
+  }
+  .btn-ghost-nav:hover { 
+    border-color: #38BDF8; 
+    color: #38BDF8; 
+  }
+</style>
 </head>
 <body class="bg-gray-950 text-white min-h-screen">
 
   <!-- Navbar -->
-  <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex items-center justify-between">
-    <a href="/" class="logo text-2xl font-bold text-cyan-400">Edu<span class="text-white">Flow</span></a>
-    <div class="flex items-center gap-4" id="nav-auth">
-      <a href="/login.html" class="text-gray-300 hover:text-white transition text-sm font-medium">Login</a>
-      <a href="/register.html" class="btn-primary text-sm px-4 py-2 rounded-lg">Get Started</a>
-    </div>
-  </nav>
+<nav>
+  <a href="/" class="logo">Edu<span>Flow</span></a>
+  <div class="nav-links">
+    <a href="/" class="nav-link active">Home</a>
+    <a href="/course.html" class="nav-link">Courses</a>
+    
+    <!-- Student links (shown when logged in) -->
+    <a href="/dashboard.html" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
+    <a href="/student-profile.html" class="nav-link" id="nav-profile" style="display:none">Profile</a>
+    
+    <!-- Auth links -->
+    <a href="/login.html" class="nav-link" id="nav-login">Login</a>
+    <a href="/register.html" class="nav-link" id="nav-register">Register</a>
+    
+    <!-- User info + logout (shown when logged in) -->
+    <span class="nav-user" id="nav-user-info" style="display:none">Hi, <strong id="nav-username">—</strong></span>
+    <button class="btn-ghost-nav" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
+  </div>
+</nav>
 
   <!-- Hero -->
   <section class="hero-section pt-32 pb-20 px-6 text-center relative overflow-hidden">

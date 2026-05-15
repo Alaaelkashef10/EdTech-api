@@ -7,33 +7,40 @@ const API = window.API_BASE ||
 // Global variables
 let allCourses = [];
 
-// Update Navbar (Student / Instructor aware)
+// Update Navbar (Student aware)
 function updateNav() {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || 'null');
-  const nav = document.getElementById('nav-auth');
-
-  if (!nav) return;
-
+  
+  const loginLink = document.getElementById('nav-login');
+  const registerLink = document.getElementById('nav-register');
+  const dashboardLink = document.getElementById('nav-dashboard');
+  const profileLink = document.getElementById('nav-profile');
+  const userInfo = document.getElementById('nav-user-info');
+  const logoutBtn = document.getElementById('nav-logout');
+  const usernameEl = document.getElementById('nav-username');
+  
   if (token && user) {
-    nav.innerHTML = `
-      <span class="text-gray-300 text-sm">Hi, <strong>${user.username}</strong></span>
-      
-      ${user.is_instructor 
-        ? `<a href="/dashboard.html" class="text-cyan-400 hover:underline text-sm mr-4">Instructor Dashboard</a>` 
-        : `<a href="/dashboard.html" class="text-cyan-400 hover:underline text-sm mr-4">My Learning</a>`
-      }
-      
-      <button onclick="logout()" 
-              class="btn-ghost text-sm px-4 py-2 rounded-lg hover:bg-red-500/10 hover:text-red-400 transition">
-        Logout
-      </button>
-    `;
+    // Hide auth links
+    if (loginLink) loginLink.style.display = 'none';
+    if (registerLink) registerLink.style.display = 'none';
+    
+    // Show student links
+    if (dashboardLink) dashboardLink.style.display = 'inline-block';
+    if (profileLink) profileLink.style.display = 'inline-block';
+    if (userInfo) userInfo.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (usernameEl) usernameEl.textContent = user.username || 'Student';
   } else {
-    nav.innerHTML = `
-      <a href="/login.html" class="text-gray-300 hover:text-white transition text-sm font-medium mr-4">Login</a>
-      <a href="/register.html" class="btn-primary text-sm px-4 py-2 rounded-lg">Get Started</a>
-    `;
+    // Show auth links
+    if (loginLink) loginLink.style.display = 'inline-block';
+    if (registerLink) registerLink.style.display = 'inline-block';
+    
+    // Hide student links
+    if (dashboardLink) dashboardLink.style.display = 'none';
+    if (profileLink) profileLink.style.display = 'none';
+    if (userInfo) userInfo.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'none';
   }
 }
 

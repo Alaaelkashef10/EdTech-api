@@ -257,7 +257,10 @@
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.toast-success { border-color: rgba(0,229,160,.35); }
     #toast.toast-error   { border-color: rgba(248,113,113,.35); }
-
+	.nav-link { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+.nav-link:hover, .nav-link.active { color: var(--text); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: .45rem 1.1rem; border-radius: 10px; font-size: .82rem; cursor: pointer; font-family: var(--font); transition: all .2s; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
     @media(max-width:640px){
       .course-row { grid-template-columns: 1fr; }
       .course-actions { justify-content: flex-start; }
@@ -266,15 +269,17 @@
 </head>
 <body>
 
-  <nav>
-    <a href="/" class="logo">Edu<span>Flow</span></a>
-    <div class="nav-right">
-      <span class="nav-user">Hi, <strong id="nav-username">—</strong></span>
-      <a href="/" style="color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .2s"
-         onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">Home</a>
-      <button class="btn-ghost" onclick="logout()">Logout</button>
-    </div>
-  </nav>
+  <<nav>
+  <a href="/" class="logo">Edu<span>Flow</span></a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/course.html" class="nav-link">Courses</a>
+    <a href="/instructor-dashboard.html" class="nav-link active">Dashboard</a>
+    <a href="/instructor-profile.html" class="nav-link">Profile</a>
+    <span class="nav-user">Hi, <strong id="nav-username">—</strong></span>
+    <button class="btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</nav>
 
   <div class="page">
 

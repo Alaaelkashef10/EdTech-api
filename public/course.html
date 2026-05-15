@@ -3,97 +3,646 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Course — EduFlow</title>
+  <title>Courses — EduFlow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body class="bg-gray-950 text-white min-h-screen">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080C14;
+      --surface: #0D1321;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --text: #F1F5F9;
+      --muted: #64748B;
+      --accent: #38BDF8;
+      --green: #34D399;
+      --amber: #FBBF24;
+      --red: #F87171;
+      --purple: #A78BFA;
+      --font: 'DM Sans', sans-serif;
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  <!-- Navbar -->
-  <nav class="fixed top-0 w-full z-50 glass-nav px-6 py-4 flex items-center justify-between">
-    <a href="/" class="logo text-2xl font-bold text-cyan-400">Edu<span class="text-white">Flow</span></a>
-    <div class="flex items-center gap-4" id="nav-auth"></div>
+    /* Nav */
+    nav { 
+      position: fixed; 
+      top: 0; 
+      width: 100%; 
+      z-index: 100; 
+      background: rgba(8,12,20,.85); 
+      backdrop-filter: blur(18px); 
+      border-bottom: 1px solid var(--border); 
+      padding: 0 2rem; 
+      height: 64px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+    }
+    .logo { font-weight: 700; font-size: 1.3rem; color: var(--accent); text-decoration: none; }
+    .logo span { color: #fff; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-link { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+    .nav-link:hover, .nav-link.active { color: var(--text); }
+    .nav-user { font-size: .85rem; color: var(--muted); }
+    .nav-user strong { color: var(--text); }
+    .btn-ghost { 
+      background: transparent; 
+      border: 1px solid var(--border); 
+      color: var(--muted); 
+      padding: .45rem 1.1rem; 
+      border-radius: 10px; 
+      font-size: .82rem; 
+      cursor: pointer; 
+      font-family: var(--font); 
+      transition: all .2s; 
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .page { padding-top: 88px; padding-bottom: 5rem; max-width: 1200px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 { font-size: 1.8rem; font-weight: 700; }
+    .page-header p { color: var(--muted); margin-top: .5rem; }
+
+    /* Filters */
+    .filters { 
+      display: flex; 
+      gap: 1rem; 
+      margin-bottom: 2rem; 
+      flex-wrap: wrap; 
+      align-items: center; 
+      background: var(--surface); 
+      border: 1px solid var(--border); 
+      border-radius: 14px; 
+      padding: 1rem 1.2rem; 
+    }
+    .search-box { 
+      flex: 1; 
+      min-width: 200px; 
+      position: relative; 
+    }
+    .search-box input { 
+      width: 100%; 
+      background: var(--bg); 
+      border: 1px solid var(--border); 
+      border-radius: 10px; 
+      padding: .7rem 1rem .7rem 2.5rem; 
+      color: var(--text); 
+      font-family: var(--font); 
+      font-size: .9rem; 
+      outline: none; 
+    }
+    .search-box input:focus { border-color: var(--accent); }
+    .search-box::before { 
+      content: '🔍'; 
+      position: absolute; 
+      left: .8rem; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      font-size: .9rem; 
+    }
+    .filter-select { 
+      background: var(--bg); 
+      border: 1px solid var(--border); 
+      border-radius: 10px; 
+      padding: .7rem 1rem; 
+      color: var(--text); 
+      font-family: var(--font); 
+      font-size: .9rem; 
+      cursor: pointer; 
+      outline: none; 
+    }
+    .filter-select:focus { border-color: var(--accent); }
+
+    /* Course Grid */
+    .courses-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 1.5rem; 
+      margin-bottom: 2rem; 
+    }
+    
+    /* Course Card - Improved Design */
+    .course-card { 
+      background: var(--surface); 
+      border: 1px solid var(--border); 
+      border-radius: 16px; 
+      overflow: hidden; 
+      transition: all .25s ease; 
+      display: flex; 
+      flex-direction: column; 
+      height: 100%; 
+    }
+    .course-card:hover { 
+      transform: translateY(-6px); 
+      border-color: var(--accent); 
+      box-shadow: 0 12px 40px rgba(56,189,248,.08); 
+    }
+    
+    .course-image-wrap { 
+      position: relative; 
+      height: 180px; 
+      overflow: hidden; 
+    }
+    .course-thumb { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      transition: transform .3s; 
+    }
+    .course-card:hover .course-thumb { 
+      transform: scale(1.05); 
+    }
+    .course-badge { 
+      position: absolute; 
+      top: 12px; 
+      left: 12px; 
+      background: rgba(8,12,20,.8); 
+      backdrop-filter: blur(8px); 
+      border: 1px solid var(--border); 
+      color: var(--accent); 
+      padding: 4px 10px; 
+      border-radius: 20px; 
+      font-size: 11px; 
+      font-weight: 600; 
+      text-transform: uppercase; 
+      letter-spacing: .05em; 
+    }
+    
+    .course-body { 
+      padding: 1.3rem; 
+      display: flex; 
+      flex-direction: column; 
+      flex: 1; 
+    }
+    .course-category { 
+      font-size: 11px; 
+      color: var(--accent); 
+      text-transform: uppercase; 
+      letter-spacing: .08em; 
+      font-weight: 600; 
+      margin-bottom: .5rem; 
+    }
+    .course-title { 
+      font-weight: 700; 
+      font-size: 1.1rem; 
+      margin-bottom: .5rem; 
+      line-height: 1.3; 
+    }
+    .course-instructor { 
+      font-size: .82rem; 
+      color: var(--muted); 
+      margin-bottom: .75rem; 
+      display: flex; 
+      align-items: center; 
+      gap: .4rem; 
+    }
+    .course-desc { 
+      font-size: .82rem; 
+      color: var(--muted); 
+      line-height: 1.5; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 2; 
+      -webkit-box-orient: vertical; 
+      overflow: hidden; 
+      margin-bottom: 1.2rem; 
+      flex: 1; 
+    }
+    
+    .course-footer { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding-top: 1rem; 
+      border-top: 1px solid var(--border); 
+    }
+    .students-count { 
+      font-size: .78rem; 
+      color: var(--muted); 
+      display: flex; 
+      align-items: center; 
+      gap: .3rem; 
+    }
+    .enroll-btn { 
+      background: var(--accent); 
+      color: #0f172a; 
+      border: none; 
+      padding: .5rem 1.2rem; 
+      border-radius: 8px; 
+      font-size: .82rem; 
+      font-weight: 700; 
+      cursor: pointer; 
+      transition: all .2s; 
+    }
+    .enroll-btn:hover { 
+      opacity: .9; 
+      transform: scale(1.05); 
+    }
+    .enroll-btn:disabled { 
+      background: var(--surface2); 
+      color: var(--muted); 
+      cursor: not-allowed; 
+      transform: none; 
+    }
+    .enrolled-badge { 
+      font-size: .78rem; 
+      color: var(--green); 
+      font-weight: 600; 
+      display: flex; 
+      align-items: center; 
+      gap: .3rem; 
+    }
+
+    /* Pagination */
+    .pagination { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      gap: .5rem; 
+      margin-top: 2rem; 
+    }
+    .page-btn { 
+      background: var(--surface); 
+      border: 1px solid var(--border); 
+      color: var(--muted); 
+      padding: .5rem .9rem; 
+      border-radius: 8px; 
+      font-size: .85rem; 
+      cursor: pointer; 
+      transition: all .2s; 
+      font-family: var(--font); 
+    }
+    .page-btn:hover { border-color: var(--accent); color: var(--text); }
+    .page-btn.active { 
+      background: var(--accent); 
+      color: #0f172a; 
+      border-color: var(--accent); 
+      font-weight: 700; 
+    }
+    .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Empty */
+    .empty-state { text-align: center; padding: 4rem; color: var(--muted); }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .5; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 4rem; color: var(--muted); }
+    .spinner { 
+      width: 32px; 
+      height: 32px; 
+      border: 3px solid var(--border); 
+      border-top-color: var(--accent); 
+      border-radius: 50%; 
+      animation: spin .7s linear infinite; 
+      margin: 0 auto 1rem; 
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    #toast { 
+      position: fixed; 
+      bottom: 24px; 
+      right: 24px; 
+      z-index: 300; 
+      background: var(--surface); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 14px 18px; 
+      font-size: 13px; 
+      color: var(--text); 
+      transform: translateY(100px); 
+      opacity: 0; 
+      transition: all .35s; 
+      max-width: 320px; 
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.toast-success { border-color: rgba(52,211,153,.4); }
+    #toast.toast-error { border-color: rgba(248,113,113,.4); }
+
+    @media (max-width: 640px) {
+      .filters { flex-direction: column; align-items: stretch; }
+      .search-box { min-width: auto; }
+      .courses-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="logo">Edu<span>Flow</span></a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/course.html" class="nav-link active">Courses</a>
+      <a href="/dashboard.html" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
+      <a href="/student-profile.html" class="nav-link" id="nav-profile" style="display:none">Profile</a>
+      <a href="/login.html" class="nav-link" id="nav-login">Login</a>
+      <a href="/register.html" class="nav-link" id="nav-register">Register</a>
+      <span class="nav-user" id="nav-user-info" style="display:none">Hi, <strong id="nav-username">—</strong></span>
+      <button class="btn-ghost" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
+    </div>
   </nav>
 
-  <!-- Course Hero -->
-  <section class="pt-24 pb-10 px-6 max-w-6xl mx-auto">
-    <div id="course-loading" class="text-center py-20">
-      <div class="spinner mx-auto mb-4"></div>
-      <p class="text-gray-500 text-sm">Loading course...</p>
+  <div class="page">
+    <div class="page-header">
+      <h1>Explore Courses</h1>
+      <p>Find the perfect course to advance your skills</p>
     </div>
 
-    <div id="course-content" class="hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        <!-- Left: Course Info -->
-        <div class="lg:col-span-2">
-          <div class="mb-2">
-            <span class="text-xs text-cyan-400 font-semibold uppercase tracking-widest">Course</span>
-          </div>
-          <h1 id="course-title" class="text-3xl md:text-4xl font-extrabold mb-4"></h1>
-          <p id="course-description" class="text-gray-400 text-base leading-relaxed mb-6"></p>
-
-          <div class="flex items-center gap-3 mb-8">
-            <div class="w-9 h-9 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm" id="instructor-avatar"></div>
-            <div>
-              <p class="text-xs text-gray-500">Instructor</p>
-              <p class="text-sm font-semibold" id="instructor-name"></p>
-            </div>
-          </div>
-
-          <!-- Progress Bar (shown if enrolled) -->
-          <div id="progress-section" class="hidden mb-8 p-4 rounded-xl bg-gray-900 border border-gray-800">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-medium">Your Progress</span>
-              <span class="text-sm text-cyan-400 font-bold" id="progress-percent">0%</span>
-            </div>
-            <div class="progress-bar-bg rounded-full h-2">
-              <div class="progress-bar-fill h-2 rounded-full transition-all duration-700" id="progress-bar" style="width:0%"></div>
-            </div>
-            <p class="text-xs text-gray-500 mt-2" id="progress-label"></p>
-          </div>
-
-          <!-- Lessons -->
-          <div>
-            <h2 class="text-xl font-bold mb-4">Course Content</h2>
-            <div id="lessons-loading" class="text-gray-500 text-sm py-4">Loading lessons...</div>
-            <div id="lessons-list" class="hidden space-y-3"></div>
-          </div>
-        </div>
-
-        <!-- Right: Enroll Card -->
-        <div class="lg:col-span-1">
-          <div class="sticky top-24 enroll-card rounded-2xl overflow-hidden">
-            <img id="course-thumbnail" src="" alt="Course Thumbnail" class="w-full h-48 object-cover"/>
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-4">
-                <span class="text-2xl font-extrabold text-white">Free</span>
-              </div>
-              <button id="enroll-btn" onclick="enrollCourse()" class="btn-primary w-full py-3 rounded-xl font-semibold text-sm mb-3">
-                Enroll Now
-              </button>
-              <p id="enroll-msg" class="text-center text-xs text-gray-500"></p>
-              <div class="mt-4 space-y-2 text-xs text-gray-400">
-                <div class="flex items-center gap-2">
-                  <span>✅</span> Full lifetime access
-                </div>
-                <div class="flex items-center gap-2">
-                  <span>📱</span> Access on all devices
-                </div>
-                <div class="flex items-center gap-2">
-                  <span>🏆</span> Certificate of completion
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+    <div class="filters">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search courses..." />
       </div>
+      <select class="filter-select" id="sort-select">
+        <option value="newest">Newest First</option>
+        <option value="popular">Most Popular</option>
+        <option value="az">A-Z</option>
+      </select>
+      <select class="filter-select" id="category-select">
+        <option value="all">All Categories</option>
+        <option value="programming">Programming</option>
+        <option value="design">Design</option>
+        <option value="business">Business</option>
+        <option value="marketing">Marketing</option>
+        <option value="data">Data Science</option>
+      </select>
     </div>
-  </section>
 
-  <script src="/js/course.js"></script>
+    <div id="courses-container">
+      <div class="loading"><div class="spinner"></div>Loading courses...</div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+    // State
+    let allCourses = [];
+    let filteredCourses = [];
+    let currentPage = 1;
+    const perPage = 9;
+
+    // Init
+    function init() {
+      updateNav();
+      loadCourses();
+      initSearch();
+      initSort();
+      initCategory();
+    }
+
+    // Nav
+    function updateNav() {
+      const loginLink = document.getElementById('nav-login');
+      const registerLink = document.getElementById('nav-register');
+      const dashboardLink = document.getElementById('nav-dashboard');
+      const profileLink = document.getElementById('nav-profile');
+      const userInfo = document.getElementById('nav-user-info');
+      const logoutBtn = document.getElementById('nav-logout');
+      const usernameEl = document.getElementById('nav-username');
+
+      if (token && user) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (registerLink) registerLink.style.display = 'none';
+        if (dashboardLink) dashboardLink.style.display = 'inline-block';
+        if (profileLink) profileLink.style.display = 'inline-block';
+        if (userInfo) userInfo.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (usernameEl) usernameEl.textContent = user.username || 'Student';
+      } else {
+        if (loginLink) loginLink.style.display = 'inline-block';
+        if (registerLink) registerLink.style.display = 'inline-block';
+        if (dashboardLink) dashboardLink.style.display = 'none';
+        if (profileLink) profileLink.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
+
+    // Load courses
+    async function loadCourses() {
+      const container = document.getElementById('courses-container');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading courses...</div>';
+
+      try {
+        const res = await fetch(API + '/api/courses');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        allCourses = data.courses || [];
+        filteredCourses = [...allCourses];
+        currentPage = 1;
+
+        applyFilters();
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state">❌ ${err.message}</div>`;
+      }
+    }
+
+    // Apply search + sort + category + pagination
+    function applyFilters() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const sort = document.getElementById('sort-select').value;
+      const category = document.getElementById('category-select').value;
+
+      // Filter by search
+      filteredCourses = [...allCourses];
+      
+      if (query) {
+        filteredCourses = filteredCourses.filter(c => 
+          c.title.toLowerCase().includes(query) || 
+          c.description.toLowerCase().includes(query)
+        );
+      }
+
+      // Filter by category (if course has category field)
+      if (category !== 'all') {
+        filteredCourses = filteredCourses.filter(c => 
+          c.category?.toLowerCase() === category || 
+          c.title.toLowerCase().includes(category)
+        );
+      }
+
+      // Sort
+      if (sort === 'newest') {
+        filteredCourses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sort === 'popular') {
+        filteredCourses.sort((a, b) => (b.students?.length || 0) - (a.students?.length || 0));
+      } else if (sort === 'az') {
+        filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      renderPage();
+    }
+
+    // Render current page
+    function renderPage() {
+      const container = document.getElementById('courses-container');
+      const start = (currentPage - 1) * perPage;
+      const end = start + perPage;
+      const pageCourses = filteredCourses.slice(start, end);
+
+      if (filteredCourses.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div>No courses found.</div>';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = pageCourses.map(c => {
+        const thumb = c.thumbnail || 'https://via.placeholder.com/400x180/0D1321/38BDF8?text=EduFlow';
+        const instructor = c.instructor_id?.username || 'Unknown';
+        const students = c.students?.length || 0;
+        const isEnrolled = user && c.students?.some(s => s._id === user._id || s === user._id);
+        const category = c.category || 'Course';
+
+        return `
+          <div class="course-card" onclick="viewCourse('${c._id}')">
+            <div class="course-image-wrap">
+              <img class="course-thumb" src="${escHtml(thumb)}" onerror="this.src='https://via.placeholder.com/400x180/0D1321/38BDF8?text=EduFlow'" alt=""/>
+              <span class="course-badge">${escHtml(category)}</span>
+            </div>
+            <div class="course-body">
+              <div class="course-category">${escHtml(category)}</div>
+              <div class="course-title">${escHtml(c.title)}</div>
+              <div class="course-instructor">👤 ${escHtml(instructor)}</div>
+              <div class="course-desc">${escHtml(c.description)}</div>
+              <div class="course-footer">
+                <span class="students-count">👥 ${students} students</span>
+                ${token && user?.role === 'student' 
+                  ? (isEnrolled 
+                    ? '<span class="enrolled-badge">✓ Enrolled</span>' 
+                    : `<button class="enroll-btn" onclick="event.stopPropagation(); enroll('${c._id}')">Enroll</button>`
+                  )
+                  : ''
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      renderPagination();
+    }
+
+    // Pagination
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredCourses.length / perPage);
+      const pagination = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>←</button>`;
+      
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+          html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+          html += `<span style="color:var(--muted);padding:0 .5rem;">…</span>`;
+        }
+      }
+      
+      html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>→</button>`;
+      
+      pagination.innerHTML = html;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.ceil(filteredCourses.length / perPage);
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Search
+    function initSearch() {
+      document.getElementById('search-input').addEventListener('input', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+    }
+
+    // Sort
+    function initSort() {
+      document.getElementById('sort-select').addEventListener('change', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+    }
+
+    // Category
+    function initCategory() {
+      document.getElementById('category-select').addEventListener('change', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+    }
+
+    // View course
+    function viewCourse(id) {
+      window.location.href = `/course.html?id=${id}`;
+    }
+
+    // Enroll
+    async function enroll(courseId) {
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + `/api/courses/${courseId}/enroll`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.message);
+        
+        showToast('✅ Enrolled successfully!', 'success');
+        loadCourses();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Helpers
+    function escHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    let toastTimer;
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `show toast-${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+    }
+
+    // Boot
+    init();
+  </script>
+
 </body>
 </html>
