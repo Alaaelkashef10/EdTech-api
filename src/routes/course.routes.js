@@ -7,53 +7,35 @@ const {
   createCourse,
   enrollCourse,
   getMyCourses,
+  getInstructorCourses,
   updateCourse,
   deleteCourse,
 } = require('../controllers/course.controller');
 
 const { createCourseValidator, updateCourseValidator } = 
-require('../validators/course.validators');
+  require('../validators/course.validators');
 
-const protect              = require('../middleware/auth');
-const role                 = require('../middleware/role');
-const validate             = require('../middleware/validate');
-const validateId           = require('../middleware/validateId');
+const protect    = require('../middleware/auth');
+const role       = require('../middleware/role');
+const validate   = require('../middleware/validate');
+const validateId = require('../middleware/validateId');
 
-
-// NOTE: /me/courses must come BEFORE /:courseId to avoid "me" being treated as an ID
+// Student enrolled courses
 router.get('/me/courses', protect, getMyCourses);
 
-// GET  /api/courses          – list all courses (public)
-router.get('/', getCourses);
+// Instructor own courses
+router.get('/instructor/my-courses', protect, role('instructor'), getInstructorCourses);
 
-// GET  /api/courses/:courseId
+// Public routes
+router.get('/', getCourses);
 router.get('/:courseId', validateId, getCourseById);
 
-// POST /api/courses          – create a course (instructors only)
+// Instructor only
 router.post('/', protect, role('instructor'), createCourseValidator, validate, createCourse);
+router.put('/:courseId', validateId, protect, role('instructor'), updateCourseValidator, validate, updateCourse);
+router.delete('/:courseId', validateId, protect, role('instructor'), deleteCourse);
 
-// POST /api/courses/:courseId/enroll — students only
+// Student only
 router.post('/:courseId/enroll', validateId, protect, role('student'), enrollCourse);
-
-
-// PUT /api/courses/:courseId — update (owner only)
-router.put(
-  '/:courseId',
-  validateId,
-  protect,
-  role('instructor'),
-  updateCourseValidator,
-  validate,
-  updateCourse
-);
-
-// DELETE /api/courses/:courseId — delete (owner only)
-router.delete(
-  '/:courseId',
-  validateId,
-  protect,
-  role('instructor'),
-  deleteCourse
-);
 
 module.exports = router;

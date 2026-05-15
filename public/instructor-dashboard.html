@@ -6,745 +6,657 @@
   <title>Instructor Dashboard — EduFlow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:        #040b14;
-      --bg-card:   #0a1628;
-      --bg-input:  #0d1f38;
-      --border:    rgba(0,200,255,0.12);
-      --cyan:      #00d4ff;
-      --cyan-dim:  rgba(0,212,255,0.15);
-      --emerald:   #00e5a0;
-      --violet:    #a78bfa;
-      --rose:      #f87171;
-      --text:      #e2e8f0;
-      --muted:     #64748b;
-      --glass:     rgba(10,22,40,0.85);
+      --bg: #030712;
+      --surface: #0f172a;
+      --surface-hover: #1e293b;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(255,255,255,0.12);
+      --text: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #38BDF8;
+      --accent-hover: #0891b2;
+      --accent-glow: rgba(56,189,248,0.15);
+      --green: #34d399;
+      --red: #F87171;
+      --font: 'Sora', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
     }
 
-    html { scroll-behavior: smooth; }
-
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: var(--font-body);
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      background-image:
-        radial-gradient(ellipse 80% 40% at 10% 0%, rgba(0,100,180,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 100%, rgba(100,0,200,0.12) 0%, transparent 60%);
+      line-height: 1.6;
     }
 
+    /* ===== NAV ===== */
     nav {
-      position: fixed; top: 0; width: 100%; z-index: 100;
-      background: var(--glass);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(8,12,20,0.85);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
       padding: 0 2rem;
       height: 64px;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--cyan); text-decoration: none; }
-    .logo span { color: #fff; }
-    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
-    .nav-user { font-size: .85rem; color: var(--muted); }
-    .nav-user strong { color: var(--text); }
-    .btn-ghost {
-      background: transparent; border: 1px solid var(--border);
-      color: var(--muted); padding: .45rem 1.1rem; border-radius: 10px;
-      font-size: .82rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
-      transition: all .2s;
+    .logo {
+      font-family: var(--font);
+      font-weight: 700; font-size: 1.3rem;
+      color: var(--accent); text-decoration: none;
+      letter-spacing: -0.02em;
     }
-    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
-
-    .page { padding-top: 88px; padding-bottom: 5rem; max-width: 1200px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
-
-    .page-header { margin-bottom: 2.5rem; }
-    .page-header h1 { font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800; }
-    .page-header h1 span { color: var(--cyan); }
-    .page-header p { color: var(--muted); font-size: .9rem; margin-top: .35rem; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
-    @media(max-width:640px){ .stats-grid { grid-template-columns: 1fr; } }
-
-    .stat-card {
-      background: var(--bg-card);
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-link {
+      color: var(--text-muted); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s; position: relative;
+      font-family: var(--font-body);
+    }
+    .nav-link:hover, .nav-link.active { color: var(--text); }
+    .nav-link.active::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 2px; background: var(--accent); border-radius: 2px;
+    }
+    .nav-user {
+      font-size: 0.85rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: var(--font-body);
+    }
+    .nav-user strong { color: var(--text); font-weight: 600; }
+    .btn-ghost-nav {
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.4rem 1.6rem;
-      position: relative; overflow: hidden;
-      transition: transform .2s, border-color .2s;
+      color: var(--text-muted);
+      padding: 0.5rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.85rem; font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.2s;
     }
-    .stat-card:hover { transform: translateY(-2px); border-color: rgba(0,212,255,.3); }
-    .stat-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, var(--glow-color, rgba(0,212,255,.06)) 0%, transparent 60%);
-      pointer-events: none;
+    .btn-ghost-nav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-glow);
     }
-    .stat-card.cyan    { --glow-color: rgba(0,212,255,.08); }
-    .stat-card.emerald { --glow-color: rgba(0,229,160,.08); }
-    .stat-card.violet  { --glow-color: rgba(167,139,250,.08); }
 
-    .stat-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .5rem; }
-    .stat-value { font-family: 'Sora', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1; }
-    .stat-card.cyan   .stat-value { color: var(--cyan); }
-    .stat-card.emerald .stat-value { color: var(--emerald); }
-    .stat-card.violet  .stat-value { color: var(--violet); }
-    .stat-icon { position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); font-size: 2rem; opacity: .15; }
+    /* ===== PAGE ===== */
+    .page {
+      padding-top: 88px;
+      padding-bottom: 5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
 
-    .create-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.8rem;
+    /* ===== STATS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
       margin-bottom: 2.5rem;
     }
-    .section-title {
-      font-family: 'Sora', sans-serif; font-size: 1.05rem; font-weight: 700;
-      margin-bottom: 1.4rem; display: flex; align-items: center; gap: .6rem;
-    }
-    .section-title .icon { color: var(--cyan); font-size: 1.2rem; }
-
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    @media(max-width:640px){ .form-grid { grid-template-columns: 1fr; } }
-    .form-full { grid-column: 1 / -1; }
-
-    .field label { display: block; font-size: .75rem; color: var(--muted); font-weight: 500; margin-bottom: .4rem; letter-spacing: .04em; }
-    .field input, .field textarea {
-      width: 100%; background: var(--bg-input);
-      border: 1px solid var(--border); border-radius: 12px;
-      padding: .75rem 1rem; font-size: .875rem; color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      transition: border-color .2s, box-shadow .2s; outline: none;
-      resize: none;
-    }
-    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
-    .field input:focus, .field textarea:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 3px rgba(0,212,255,.1);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #0094c8, #0070a0);
-      color: #fff; border: none; border-radius: 12px;
-      padding: .75rem 1.8rem; font-size: .875rem; font-weight: 600;
-      font-family: 'Sora', sans-serif; cursor: pointer;
-      transition: all .2s; margin-top: 1rem;
-      display: inline-flex; align-items: center; gap: .5rem;
-    }
-    .btn-primary:hover { background: linear-gradient(135deg, #00b0e8, #0090c8); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,180,255,.25); }
-    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-
-    .alert {
-      border-radius: 10px; padding: .75rem 1rem; font-size: .82rem;
-      margin-bottom: 1rem; display: none;
-    }
-    .alert.error   { background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.3); color: var(--rose); }
-    .alert.success { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.3); color: var(--emerald); }
-    .alert.show    { display: block; }
-
-    .courses-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
-    .courses-header h2 { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; }
-    .courses-count { font-size: .78rem; color: var(--muted); background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: .2rem .75rem; }
-
-    .course-row {
-      background: var(--bg-card);
+    .stat-card {
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 16px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .stat-value {
+      font-family: var(--font);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .section-header {
       padding: 1.2rem 1.5rem;
-      margin-bottom: .75rem;
-      display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 1rem; align-items: center;
-      transition: border-color .2s, transform .15s;
-      animation: slideIn .3s ease both;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    @keyframes slideIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
-    .course-row:hover { border-color: rgba(0,212,255,.25); transform: translateX(2px); }
+    .section-title {
+      font-family: var(--font);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(56,189,248,0.35);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-danger {
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: var(--red);
+      padding: 0.5rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+    .btn-danger:hover { background: rgba(248,113,113,0.2); }
 
-    .course-thumb {
-      width: 56px; height: 56px; border-radius: 10px;
-      object-fit: cover; background: var(--bg-input);
-      border: 1px solid var(--border); flex-shrink: 0;
+    /* ===== COURSE LIST ===== */
+    .course-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.2s;
     }
-    .course-thumb-placeholder {
-      width: 56px; height: 56px; border-radius: 10px;
-      background: var(--bg-input); border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; flex-shrink: 0;
+    .course-row:hover { background: rgba(255,255,255,0.02); }
+    .course-row:last-child { border-bottom: none; }
+    .course-info h4 {
+      font-family: var(--font);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
     }
+    .course-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .course-actions { display: flex; gap: 0.5rem; }
 
-    .course-title { font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .25rem; }
-    .course-meta { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .meta-pill {
-      display: inline-flex; align-items: center; gap: .35rem;
-      font-size: .72rem; color: var(--muted); background: rgba(255,255,255,.04);
-      border: 1px solid var(--border); border-radius: 20px; padding: .2rem .65rem;
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
-    .meta-pill.students { color: var(--emerald); border-color: rgba(0,229,160,.2); background: rgba(0,229,160,.06); }
-    .meta-pill.date     { color: var(--violet);  border-color: rgba(167,139,250,.2); background: rgba(167,139,250,.06); }
-
-    .course-actions { display: flex; gap: .5rem; flex-shrink: 0; }
-    .btn-action {
-      background: transparent; border: 1px solid var(--border);
-      color: var(--muted); padding: .4rem .9rem;
-      border-radius: 8px; font-size: .75rem; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; transition: all .2s;
-      display: inline-flex; align-items: center; gap: .3rem;
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
     }
-    .btn-action:hover { border-color: var(--cyan); color: var(--cyan); }
-    .btn-action.danger:hover { border-color: var(--rose); color: var(--rose); }
+    .modal h2 {
+      font-family: var(--font);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .form-field { margin-bottom: 1rem; }
+    .form-field label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .form-field input,
+    .form-field textarea {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-field input:focus,
+    .form-field textarea:focus { border-color: var(--accent); }
+    .form-field textarea { min-height: 100px; resize: vertical; }
 
+    /* ===== EMPTY / LOADING ===== */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+    }
     .spinner {
-      width: 28px; height: 28px;
-      border: 3px solid var(--border);
-      border-top-color: var(--cyan);
+      width: 32px; height: 32px;
+      border: 3px solid rgba(56,189,248,0.2);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin .7s linear infinite;
-      margin: 0 auto;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .loading-state { text-align: center; padding: 3rem; color: var(--muted); font-size: .875rem; }
-
-    .empty-state { text-align: center; padding: 3.5rem 2rem; color: var(--muted); }
-    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .5; }
-    .empty-state p { font-size: .9rem; }
-
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
-      display: none; align-items: center; justify-content: center;
-      padding: 1rem;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 2rem; max-width: 480px; width: 100%;
-      animation: popIn .25s cubic-bezier(.175,.885,.32,1.275);
-    }
-    @keyframes popIn { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .modal-header h3 { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; }
-    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.3rem; line-height: 1; transition: color .2s; }
-    .modal-close:hover { color: var(--text); }
-    .modal-footer { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; }
-    .btn-cancel {
-      background: transparent; border: 1px solid var(--border); color: var(--muted);
-      padding: .65rem 1.4rem; border-radius: 10px; font-size: .85rem;
-      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
-    }
-    .btn-cancel:hover { border-color: var(--text); color: var(--text); }
-    .btn-danger {
-      background: rgba(248,113,113,.15); border: 1px solid rgba(248,113,113,.35);
-      color: var(--rose); padding: .65rem 1.4rem; border-radius: 10px;
-      font-size: .85rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
-    }
-    .btn-danger:hover { background: rgba(248,113,113,.25); }
-
+    /* ===== TOAST ===== */
     #toast {
-      position: fixed; bottom: 2rem; right: 2rem; z-index: 300;
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 12px; padding: .85rem 1.2rem;
-      font-size: .83rem; color: var(--text);
-      display: flex; align-items: center; gap: .6rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-      transform: translateY(100px); opacity: 0;
-      transition: all .35s cubic-bezier(.175,.885,.32,1.275);
-      max-width: 320px;
+      position: fixed; bottom: 24px; right: 24px; z-index: 300;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text);
+      display: flex; align-items: center; gap: 0.75rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      transform: translateY(120px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-width: 360px;
     }
     #toast.show { transform: translateY(0); opacity: 1; }
-    #toast.toast-success { border-color: rgba(0,229,160,.35); }
-    #toast.toast-error   { border-color: rgba(248,113,113,.35); }
-	.nav-link { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
-.nav-link:hover, .nav-link.active { color: var(--text); }
-.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: .45rem 1.1rem; border-radius: 10px; font-size: .82rem; cursor: pointer; font-family: var(--font); transition: all .2s; }
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-    @media(max-width:640px){
-      .course-row { grid-template-columns: 1fr; }
-      .course-actions { justify-content: flex-start; }
+    #toast.toast-success { border-color: rgba(52,211,153,0.3); }
+    #toast.toast-error { border-color: rgba(248,113,113,0.3); }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .course-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
     }
   </style>
 </head>
 <body>
 
-  <<nav>
+  <!-- Nav -->
+  <!-- Copy this exact nav to all pages -->
+<nav>
   <a href="/" class="logo">Edu<span>Flow</span></a>
   <div class="nav-links">
     <a href="/" class="nav-link">Home</a>
     <a href="/courses.html" class="nav-link">Courses</a>
-    <a href="/instructor-dashboard.html" class="nav-link active">Dashboard</a>
-    <a href="/instructor-profile.html" class="nav-link">Profile</a>
-    <span class="nav-user">Hi, <strong id="nav-username">—</strong></span>
-    <button class="btn-ghost" onclick="logout()">Logout</button>
+    <a href="#" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
+    <a href="#" class="nav-link" id="nav-profile" style="display:none">Profile</a>
+    <a href="/admin-dashboard.html" class="nav-link" id="nav-admin" style="display:none;color:#F87171">Admin</a>
+    <a href="/login.html" class="nav-link" id="nav-login">Login</a>
+    <a href="/register.html" class="nav-link" id="nav-register">Register</a>
+    <span class="nav-user" id="nav-user-info" style="display:none">
+      <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#38BDF8,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff;" id="nav-avatar">U</span>
+      <strong id="nav-username">—</strong>
+    </span>
+    <button class="btn-ghost-nav" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
   </div>
 </nav>
 
   <div class="page">
-
-    <div class="page-header">
-      <h1>Instructor <span>Dashboard</span></h1>
-      <p>Manage your courses and track student progress</p>
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--accent);" id="stat-courses">—</div>
+        <div class="stat-label">My Courses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);" id="stat-students">—</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: #FBBF24;" id="stat-lessons">—</div>
+        <div class="stat-label">Total Lessons</div>
+      </div>
     </div>
 
-    <div id="page-loading" class="loading-state">
-      <div class="spinner"></div>
-      <p style="margin-top:1rem">Loading your dashboard...</p>
-    </div>
-
-    <div id="main-content" style="display:none">
-
-      <div class="stats-grid">
-        <div class="stat-card cyan">
-          <p class="stat-label">Total Courses</p>
-          <p class="stat-value" id="stat-courses">0</p>
-          <span class="stat-icon">📚</span>
-        </div>
-        <div class="stat-card emerald">
-          <p class="stat-label">Total Students</p>
-          <p class="stat-value" id="stat-students">0</p>
-          <span class="stat-icon">👥</span>
-        </div>
-        <div class="stat-card violet">
-          <p class="stat-label">Total Lessons</p>
-          <p class="stat-value" id="stat-lessons">0</p>
-          <span class="stat-icon">🎯</span>
-        </div>
+    <!-- My Courses Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📚 My Courses</div>
+        <button class="btn-primary" onclick="openCreateModal()">+ New Course</button>
       </div>
-
-      <div class="create-section">
-        <h2 class="section-title"><span class="icon">＋</span> Create New Course</h2>
-        <div id="create-error" class="alert error"></div>
-        <div id="create-success" class="alert success"></div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Course Title *</label>
-            <input type="text" id="new-title" placeholder="e.g. Complete Node.js Bootcamp"/>
-          </div>
-          <div class="field">
-            <label>Thumbnail URL</label>
-            <input type="text" id="new-thumbnail" placeholder="https://..."/>
-          </div>
-          <div class="field form-full">
-            <label>Description *</label>
-            <textarea id="new-description" rows="3" placeholder="What will students learn in this course?"></textarea>
-          </div>
-        </div>
-        <button class="btn-primary" id="create-btn" onclick="createCourse()">
-          <span id="create-btn-text">Create Course</span>
-        </button>
-      </div>
-
-      <div class="courses-section">
-        <div class="courses-header">
-          <h2>My Courses</h2>
-          <span class="courses-count" id="courses-count">0 courses</span>
-        </div>
-
-        <div id="courses-loading" class="loading-state">
+      <div id="courses-container">
+        <div class="empty-state">
           <div class="spinner"></div>
-          <p style="margin-top:.75rem">Loading courses...</p>
-        </div>
-
-        <div id="courses-list" style="display:none"></div>
-
-        <div id="courses-empty" class="empty-state" style="display:none">
-          <div class="empty-icon">📭</div>
-          <p>You haven't created any courses yet.<br>Use the form above to get started.</p>
+          <p>Loading your courses...</p>
         </div>
       </div>
-
     </div>
   </div>
 
-  <div class="modal-overlay" id="delete-modal">
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" id="modal">
     <div class="modal">
-      <div class="modal-header">
-        <h3>Delete Course</h3>
-        <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+      <h2 id="modal-title">Create Course</h2>
+      <div class="form-field">
+        <label>Title</label>
+        <input type="text" id="course-title" placeholder="e.g. Advanced JavaScript" />
       </div>
-      <p style="font-size:.875rem; color:var(--muted); line-height:1.6">
-        Are you sure you want to delete
-        <strong id="delete-course-name" style="color:var(--text)"></strong>?
-        This action cannot be undone and all enrolled students will lose access.
-      </p>
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-        <button class="btn-danger" onclick="confirmDelete()" id="confirm-delete-btn">Delete Course</button>
+      <div class="form-field">
+        <label>Description</label>
+        <textarea id="course-desc" placeholder="Course description..."></textarea>
       </div>
-    </div>
-  </div>
-	  <!-- Edit Modal -->
-  <div class="modal-overlay" id="edit-modal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Edit Course</h3>
-        <button class="modal-close" onclick="closeEditModal()">✕</button>
+      <div class="form-field">
+        <label>Thumbnail URL (optional)</label>
+        <input type="text" id="course-thumb" placeholder="https://..." />
       </div>
-      <div class="form-grid" style="margin-bottom:1rem">
-        <div class="field">
-          <label>Course Title *</label>
-          <input type="text" id="edit-title" placeholder="Course title"/>
-        </div>
-        <div class="field">
-          <label>Thumbnail URL</label>
-          <input type="text" id="edit-thumbnail" placeholder="https://..."/>
-        </div>
-        <div class="field form-full">
-          <label>Description *</label>
-          <textarea id="edit-description" rows="3" placeholder="What will students learn?"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-        <button class="btn-primary" onclick="confirmEdit()" id="confirm-edit-btn">Save Changes</button>
+      <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1.5rem;">
+        <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveCourse()" id="modal-save-btn">Create</button>
       </div>
     </div>
   </div>
+
   <div id="toast"></div>
 
   <script>
-       // ═══════════════════════════════════════════════════════════════════════
-    //  Config
-    // ═══════════════════════════════════════════════════════════════════════
-    const API    = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
-    const token  = localStorage.getItem('token');
-    const user   = JSON.parse(localStorage.getItem('user') || 'null');
+    // ⚠️ PORT 3000
+    const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Auth Guard
-    // ═══════════════════════════════════════════════════════════════════════
+    // Auth guard
     if (!token || !user) {
       window.location.href = '/login.html';
-    } else if (user.role !== 'instructor' && !user.is_instructor) {
+    } else if (user.role !== 'instructor') {
       window.location.href = '/dashboard.html';
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  State
-    // ═══════════════════════════════════════════════════════════════════════
-    let allCourses   = [];
-    let deleteTarget = null;
-    let editTarget   = null;
+    document.getElementById('nav-username').textContent = user?.username || 'Instructor';
+    document.getElementById('nav-avatar').textContent = (user?.username || 'I').charAt(0).toUpperCase();
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Init
-    // ═══════════════════════════════════════════════════════════════════════
-    document.getElementById('nav-username').textContent =
-      user?.username || user?.name || 'Instructor';
+    let editingCourseId = null;
 
     async function init() {
+      await loadStats();
+      await loadMyCourses();
+    }
+
+    // ========== STATS ==========
+    async function loadStats() {
       try {
-        await loadCourses();
-        document.getElementById('page-loading').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        const res = await fetch(API + '/api/courses/instructor/my-courses', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        const courses = data.courses || [];
+        document.getElementById('stat-courses').textContent = courses.length;
+
+        const totalStudents = courses.reduce((sum, c) => sum + (c.students?.length || 0), 0);
+        document.getElementById('stat-students').textContent = totalStudents;
+
+        // Lessons count would require fetching each course's lessons
+        document.getElementById('stat-lessons').textContent = '—';
       } catch (err) {
-        console.error('Dashboard init error:', err);
-        document.getElementById('page-loading').innerHTML =
-          `<p style="color:var(--rose)">Failed to load dashboard.
-            <a href="/login.html" style="color:var(--cyan)">Re-login</a></p>`;
+        console.error('Stats error:', err);
       }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Load Courses
-    // ═══════════════════════════════════════════════════════════════════════
-    async function loadCourses() {
-      const res   = await apiFetch('/api/courses/me/courses');
-      const data  = await res.json();
+    // ========== MY COURSES ==========
+    async function loadMyCourses() {
+      const container = document.getElementById('courses-container');
 
-      if (!res.ok) throw new Error(data.message || 'Failed to fetch courses');
+      try {
+        const res = await fetch(API + '/api/courses/instructor/my-courses', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
 
-      allCourses = data.courses || [];
-      renderStats();
-      renderCourses();
+        if (!res.ok) {
+          throw new Error(data.message || `HTTP ${res.status}`);
+        }
+
+        const courses = data.courses || [];
+
+        if (courses.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div style="font-size:3rem;margin-bottom:1rem;opacity:.5;">📚</div>
+              <p>You haven't created any courses yet.</p>
+              <button class="btn-primary" style="margin-top:1rem;" onclick="openCreateModal()">Create Your First Course</button>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = courses.map(c => `
+          <div class="course-row">
+            <div class="course-info">
+              <h4>${escHtml(c.title)}</h4>
+              <p>${c.students?.length || 0} students • ${escHtml(c.description?.substring(0, 60) || '')}${c.description?.length > 60 ? '...' : ''}</p>
+            </div>
+            <div class="course-actions">
+              <button class="btn-secondary" onclick="openEditModal('${c._id}', '${escHtml(c.title)}', '${escHtml(c.description || '')}', '${escHtml(c.thumbnail || '')}')">✏️ Edit</button>
+              <button class="btn-danger" onclick="deleteCourse('${c._id}')">🗑️ Delete</button>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error('loadMyCourses ERROR:', err);
+        container.innerHTML = `
+          <div class="empty-state">
+            <div style="font-size:2rem;margin-bottom:1rem;">⚠️</div>
+            <p>Failed to load courses: ${escHtml(err.message)}</p>
+            <button class="btn-primary" style="margin-top:1rem;" onclick="loadMyCourses()">Retry</button>
+          </div>`;
+      }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Render Stats
-    // ═══════════════════════════════════════════════════════════════════════
-    function renderStats() {
-      const totalStudents = allCourses.reduce((sum, c) => sum + (c.students?.length || 0), 0);
-      document.getElementById('stat-courses').textContent   = allCourses.length;
-      document.getElementById('stat-students').textContent  = totalStudents;
-      document.getElementById('stat-lessons').textContent   = '—';
-      document.getElementById('courses-count').textContent =
-        `${allCourses.length} course${allCourses.length !== 1 ? 's' : ''}`;
+    // ========== CREATE / EDIT ==========
+    function openCreateModal() {
+      editingCourseId = null;
+      document.getElementById('modal-title').textContent = 'Create Course';
+      document.getElementById('course-title').value = '';
+      document.getElementById('course-desc').value = '';
+      document.getElementById('course-thumb').value = '';
+      document.getElementById('modal-save-btn').textContent = 'Create';
+      document.getElementById('modal').classList.add('active');
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Render Courses
-    // ═══════════════════════════════════════════════════════════════════════
-    function renderCourses() {
-      const list     = document.getElementById('courses-list');
-      const empty    = document.getElementById('courses-empty');
-      const loading  = document.getElementById('courses-loading');
+    function openEditModal(id, title, desc, thumb) {
+      editingCourseId = id;
+      document.getElementById('modal-title').textContent = 'Edit Course';
+      document.getElementById('course-title').value = title;
+      document.getElementById('course-desc').value = desc;
+      document.getElementById('course-thumb').value = thumb;
+      document.getElementById('modal-save-btn').textContent = 'Save Changes';
+      document.getElementById('modal').classList.add('active');
+    }
 
-      loading.style.display = 'none';
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
 
-      if (allCourses.length === 0) {
-        empty.style.display = 'block';
-        list.style.display  = 'none';
+    async function saveCourse() {
+      const title = document.getElementById('course-title').value.trim();
+      const description = document.getElementById('course-desc').value.trim();
+      const thumbnail = document.getElementById('course-thumb').value.trim();
+
+      if (!title || !description) {
+        showToast('Title and description are required', 'error');
         return;
       }
 
-      list.style.display  = 'block';
-      empty.style.display = 'none';
+      try {
+        const url = editingCourseId
+          ? `${API}/api/courses/${editingCourseId}`
+          : `${API}/api/courses`;
+        const method = editingCourseId ? 'PUT' : 'POST';
 
-      list.innerHTML = allCourses.map((c, i) => {
-        const studentCount = c.students?.length || 0;
-        const date = new Date(c.createdAt).toLocaleDateString('en-GB', {
-          day: 'numeric', month: 'short', year: 'numeric'
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ title, description, thumbnail })
         });
-        const thumb = c.thumbnail
-          ? `<img src="${escHtml(c.thumbnail)}" class="course-thumb"
-               onerror="this.outerHTML='<div class=\\'course-thumb-placeholder\\'>📚</div>'" alt=""/>`
-          : `<div class="course-thumb-placeholder">📚</div>`;
 
-        return `
-          <div class="course-row" style="animation-delay:${i * 60}ms">
-            ${thumb}
-            <div class="course-info">
-              <div class="course-title">${escHtml(c.title)}</div>
-              <div class="course-meta">
-                <span class="meta-pill students">👥 ${studentCount} student${studentCount !== 1 ? 's' : ''}</span>
-                <span class="meta-pill date">📅 ${date}</span>
-                ${c.is_completed
-                  ? '<span class="meta-pill" style="color:var(--emerald);border-color:rgba(0,229,160,.2);background:rgba(0,229,160,.06)">✔ Completed</span>'
-                  : ''}
-              </div>
-            </div>
-            <div class="course-actions">
-              <button class="btn-action" onclick="viewCourse('${c._id}')">
-                <span>View</span> →
-              </button>
-              <button class="btn-action" onclick="openEditModal('${c._id}')">
-                ✏️ Edit
-              </button>
-              <button class="btn-action danger"
-                onclick="openDeleteModal('${c._id}', '${escHtml(c.title).replace(/'/g,"\\'")}')">
-                🗑️
-              </button>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Create Course
-    // ═══════════════════════════════════════════════════════════════════════
-    async function createCourse() {
-      const title       = document.getElementById('new-title').value.trim();
-      const description = document.getElementById('new-description').value.trim();
-      const thumbnail   = document.getElementById('new-thumbnail').value.trim();
-
-      hideAlerts();
-
-      if (!title)       return showAlert('error', 'Course title is required.');
-      if (!description) return showAlert('error', 'Description is required.');
-
-      const btn = document.getElementById('create-btn');
-      const txt = document.getElementById('create-btn-text');
-      btn.disabled    = true;
-      txt.textContent = 'Creating...';
-
-      try {
-        const res  = await apiFetch('/api/courses', 'POST', { title, description, thumbnail });
         const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
 
-        if (!res.ok) throw new Error(data.message || 'Failed to create course');
-
-        showAlert('success', `"${data.course.title}" created successfully!`);
-        document.getElementById('new-title').value       = '';
-        document.getElementById('new-description').value = '';
-        document.getElementById('new-thumbnail').value   = '';
-
-        allCourses.unshift(data.course);
-        renderStats();
-        renderCourses();
-        showToast('🎉 Course created!', 'success');
-
-      } catch (err) {
-        showAlert('error', err.message);
-      } finally {
-        btn.disabled    = false;
-        txt.textContent = 'Create Course';
-      }
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Edit Flow
-    // ═══════════════════════════════════════════════════════════════════════
-    function openEditModal(id) {
-      const course = allCourses.find(c => c._id === id);
-      if (!course) return;
-
-      editTarget = id;
-      document.getElementById('edit-title').value       = course.title || '';
-      document.getElementById('edit-description').value = course.description || '';
-      document.getElementById('edit-thumbnail').value   = course.thumbnail || '';
-      document.getElementById('edit-modal').classList.add('open');
-    }
-
-    function closeEditModal() {
-      editTarget = null;
-      document.getElementById('edit-modal').classList.remove('open');
-    }
-
-    async function confirmEdit() {
-      if (!editTarget) return;
-
-      const title       = document.getElementById('edit-title').value.trim();
-      const description = document.getElementById('edit-description').value.trim();
-      const thumbnail   = document.getElementById('edit-thumbnail').value.trim();
-
-      if (!title)       return showToast('Title is required', 'error');
-      if (!description) return showToast('Description is required', 'error');
-
-      const btn = document.getElementById('confirm-edit-btn');
-      btn.disabled    = true;
-      btn.textContent = 'Saving...';
-
-      try {
-        const body = {};
-        if (title) body.title = title;
-        if (description) body.description = description;
-        if (thumbnail) body.thumbnail = thumbnail;
-
-        const res  = await apiFetch(`/api/courses/${editTarget}`, 'PUT', body);
-        const data = await res.json();
-
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.message || 'Update failed');
-        }
-
-        // Update local state
-        const idx = allCourses.findIndex(c => c._id === editTarget);
-        if (idx !== -1) {
-          allCourses[idx] = { ...allCourses[idx], ...data.course };
-        }
-
-        renderCourses();
-        closeEditModal();
-        showToast('✏️ Course updated', 'success');
-
+        showToast(editingCourseId ? '✅ Course updated' : '✅ Course created', 'success');
+        closeModal();
+        await loadMyCourses();
+        await loadStats();
       } catch (err) {
         showToast(err.message, 'error');
-        closeEditModal();
-      } finally {
-        btn.disabled    = false;
-        btn.textContent = 'Save Changes';
       }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Delete Flow
-    // ═══════════════════════════════════════════════════════════════════════
-    function openDeleteModal(id, title) {
-      deleteTarget = id;
-      document.getElementById('delete-course-name').textContent = title;
-      document.getElementById('delete-modal').classList.add('open');
-    }
-    function closeDeleteModal() {
-      deleteTarget = null;
-      document.getElementById('delete-modal').classList.remove('open');
-    }
-
-    async function confirmDelete() {
-      if (!deleteTarget) return;
-      const btn = document.getElementById('confirm-delete-btn');
-      btn.disabled    = true;
-      btn.textContent = 'Deleting...';
+    // ========== DELETE ==========
+    async function deleteCourse(courseId) {
+      if (!confirm('Are you sure you want to delete this course? This cannot be undone.')) return;
 
       try {
-        const res = await apiFetch(`/api/courses/${deleteTarget}`, 'DELETE');
-        
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.message || 'Delete failed — you may not own this course');
-        }
+        const res = await fetch(`${API}/api/courses/${courseId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
 
-        allCourses = allCourses.filter(c => c._id !== deleteTarget);
-        renderStats();
-        renderCourses();
-        closeDeleteModal();
-        showToast('🗑️ Course deleted', 'success');
-
+        showToast('✅ Course deleted', 'success');
+        await loadMyCourses();
+        await loadStats();
       } catch (err) {
         showToast(err.message, 'error');
-        closeDeleteModal();
-      } finally {
-        btn.disabled    = false;
-        btn.textContent = 'Delete Course';
       }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  View Course
-    // ═══════════════════════════════════════════════════════════════════════
-    function viewCourse(id) {
-      window.location.href = `/course.html?id=${id}`;
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Helpers
-    // ═══════════════════════════════════════════════════════════════════════
-    function apiFetch(path, method = 'GET', body = null) {
-      const opts = {
-        method,
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      };
-      if (body) opts.body = JSON.stringify(body);
-      return fetch(API + path, opts);
-    }
-
-    function escHtml(str) {
-      return String(str)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    }
-
-    function showAlert(type, msg) {
-      const el = document.getElementById(`create-${type}`);
-      el.textContent = msg;
-      el.classList.add('show');
-    }
-    function hideAlerts() {
-      ['create-error','create-success'].forEach(id => {
-        document.getElementById(id).classList.remove('show');
-      });
-    }
-
-    let toastTimer;
-    function showToast(msg, type = 'success') {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className   = `show toast-${type}`;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { t.className = ''; }, 3500);
-    }
-
+    // ========== LOGOUT ==========
     function logout() {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/';
     }
 
-    document.getElementById('delete-modal').addEventListener('click', function(e) {
-      if (e.target === this) closeDeleteModal();
-    });
-    document.getElementById('edit-modal').addEventListener('click', function(e) {
-      if (e.target === this) closeEditModal();
-    });
+    // ========== UTILS ==========
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  Boot
-    // ═══════════════════════════════════════════════════════════════════════
+    let toastTimer;
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `show toast-${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+    }
+	
+	function updateNav() {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  
+  const loginLink = document.getElementById('nav-login');
+  const registerLink = document.getElementById('nav-register');
+  const logoutBtn = document.getElementById('nav-logout');
+  const userInfo = document.getElementById('nav-user-info');
+  const usernameEl = document.getElementById('nav-username');
+  const avatarEl = document.getElementById('nav-avatar');
+  
+  // Dynamic links
+  const dashboardLink = document.getElementById('nav-dashboard');
+  const profileLink = document.getElementById('nav-profile');
+  const adminLink = document.getElementById('nav-admin');
+  
+  if (token && user) {
+    // Hide auth links
+    if (loginLink) loginLink.style.display = 'none';
+    if (registerLink) registerLink.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (userInfo) userInfo.style.display = 'flex';
+    if (usernameEl) usernameEl.textContent = user.username || 'User';
+    if (avatarEl) avatarEl.textContent = (user.username || 'U').charAt(0).toUpperCase();
+    
+    // Set role-specific links
+    if (user.role === 'student') {
+      if (dashboardLink) {
+        dashboardLink.style.display = 'inline-block';
+        dashboardLink.href = '/dashboard.html';
+      }
+      if (profileLink) {
+        profileLink.style.display = 'inline-block';
+        profileLink.href = '/student-profile.html';
+      }
+    } else if (user.role === 'instructor') {
+      if (dashboardLink) {
+        dashboardLink.style.display = 'inline-block';
+        dashboardLink.href = '/instructor-dashboard.html';
+      }
+      if (profileLink) {
+        profileLink.style.display = 'inline-block';
+        profileLink.href = '/instructor-profile.html';
+      }
+    } else if (user.role === 'admin') {
+      if (adminLink) adminLink.style.display = 'inline-block';
+      if (dashboardLink) {
+        dashboardLink.style.display = 'inline-block';
+        dashboardLink.href = '/admin-dashboard.html';
+      }
+    }
+  } else {
+    // Show auth links
+    if (loginLink) loginLink.style.display = 'inline-block';
+    if (registerLink) registerLink.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (userInfo) userInfo.style.display = 'none';
+    
+    // Hide all role links
+    [dashboardLink, profileLink, adminLink].forEach(el => {
+      if (el) {
+        el.style.display = 'none';
+        el.href = '#';
+      }
+    });
+  }
+}
+
+    // Boot
     init();
   </script>
 </body>

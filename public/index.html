@@ -77,22 +77,30 @@
   <!-- Navbar -->
 <nav>
   <a href="/" class="logo">Edu<span>Flow</span></a>
-  <div class="nav-links">
-    <a href="/" class="nav-link active">Home</a>
-    <a href="/courses.html" class="nav-link">Courses</a>
-    
-    <!-- Student links (shown when logged in) -->
-    <a href="/dashboard.html" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
-    <a href="/student-profile.html" class="nav-link" id="nav-profile" style="display:none">Profile</a>
-    
-    <!-- Auth links -->
-    <a href="/login.html" class="nav-link" id="nav-login">Login</a>
-    <a href="/register.html" class="nav-link" id="nav-register">Register</a>
-    
-    <!-- User info + logout (shown when logged in) -->
-    <span class="nav-user" id="nav-user-info" style="display:none">Hi, <strong id="nav-username">—</strong></span>
-    <button class="btn-ghost-nav" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
-  </div>
+<div class="nav-links">
+  <a href="/" class="nav-link active">Home</a>
+  <a href="/courses.html" class="nav-link">Courses</a>
+  
+  <!-- Dynamic Dashboard link -->
+  <a href="#" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
+  
+  <!-- Dynamic Profile link (single link, href changes by role) -->
+  <a href="#" class="nav-link" id="nav-profile" style="display:none">Profile</a>
+  
+  <!-- Admin link -->
+  <a href="/admin-dashboard.html" class="nav-link" id="nav-admin" style="display:none;color:#F87171">Admin</a>
+  
+  <!-- Auth links -->
+  <a href="/login.html" class="nav-link" id="nav-login">Login</a>
+  <a href="/register.html" class="nav-link" id="nav-register">Register</a>
+  
+  <!-- User info -->
+  <span class="nav-user" id="nav-user-info" style="display:none">
+    <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#38BDF8,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff;" id="nav-avatar">U</span>
+    <strong id="nav-username">—</strong>
+  </span>
+  <button class="btn-ghost-nav" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
+</div>
 </nav>
 
   <!-- Hero -->

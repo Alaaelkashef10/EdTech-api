@@ -14,33 +14,65 @@ function updateNav() {
   
   const loginLink = document.getElementById('nav-login');
   const registerLink = document.getElementById('nav-register');
+  const logoutBtn = document.getElementById('nav-logout');
+  const userInfo = document.getElementById('nav-user-info');
+  const usernameEl = document.getElementById('nav-username');
+  const avatarEl = document.getElementById('nav-avatar');
+  
+  // Dynamic links
   const dashboardLink = document.getElementById('nav-dashboard');
   const profileLink = document.getElementById('nav-profile');
-  const userInfo = document.getElementById('nav-user-info');
-  const logoutBtn = document.getElementById('nav-logout');
-  const usernameEl = document.getElementById('nav-username');
+  const adminLink = document.getElementById('nav-admin');
   
   if (token && user) {
     // Hide auth links
     if (loginLink) loginLink.style.display = 'none';
     if (registerLink) registerLink.style.display = 'none';
-    
-    // Show student links
-    if (dashboardLink) dashboardLink.style.display = 'inline-block';
-    if (profileLink) profileLink.style.display = 'inline-block';
-    if (userInfo) userInfo.style.display = 'inline-block';
     if (logoutBtn) logoutBtn.style.display = 'inline-block';
-    if (usernameEl) usernameEl.textContent = user.username || 'Student';
+    if (userInfo) userInfo.style.display = 'flex';
+    if (usernameEl) usernameEl.textContent = user.username || 'User';
+    if (avatarEl) avatarEl.textContent = (user.username || 'U').charAt(0).toUpperCase();
+    
+    // Set role-specific links
+    if (user.role === 'student') {
+      if (dashboardLink) {
+        dashboardLink.style.display = 'inline-block';
+        dashboardLink.href = '/dashboard.html';
+      }
+      if (profileLink) {
+        profileLink.style.display = 'inline-block';
+        profileLink.href = '/student-profile.html';
+      }
+    } else if (user.role === 'instructor') {
+      if (dashboardLink) {
+        dashboardLink.style.display = 'inline-block';
+        dashboardLink.href = '/instructor-dashboard.html';
+      }
+      if (profileLink) {
+        profileLink.style.display = 'inline-block';
+        profileLink.href = '/instructor-profile.html';
+      }
+    } else if (user.role === 'admin') {
+      if (adminLink) adminLink.style.display = 'inline-block';
+      if (dashboardLink) {
+        dashboardLink.style.display = 'inline-block';
+        dashboardLink.href = '/admin-dashboard.html';
+      }
+    }
   } else {
     // Show auth links
     if (loginLink) loginLink.style.display = 'inline-block';
     if (registerLink) registerLink.style.display = 'inline-block';
-    
-    // Hide student links
-    if (dashboardLink) dashboardLink.style.display = 'none';
-    if (profileLink) profileLink.style.display = 'none';
-    if (userInfo) userInfo.style.display = 'none';
     if (logoutBtn) logoutBtn.style.display = 'none';
+    if (userInfo) userInfo.style.display = 'none';
+    
+    // Hide all role links
+    [dashboardLink, profileLink, adminLink].forEach(el => {
+      if (el) {
+        el.style.display = 'none';
+        el.href = '#';
+      }
+    });
   }
 }
 
