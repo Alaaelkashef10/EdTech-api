@@ -32,7 +32,7 @@ function setLoading(btnId, loading) {
 async function register() {
   hideError();
   const username = document.getElementById('username')?.value.trim();
-  const email = document.getElementById('email')?.value.trim();
+  const email    = document.getElementById('email')?.value.trim();
   const password = document.getElementById('password')?.value;
 
   if (!username || !email || !password) {
@@ -43,23 +43,19 @@ async function register() {
   document.getElementById('register-btn').textContent = 'Creating account...';
 
   try {
-    const res = await fetch(`${API}/users/register`, {
-      method: 'POST',
+    const res  = await fetch(`${API}/users/register`, {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password, is_instructor: isInstructor }),
+      body:    JSON.stringify({ username, email, password, is_instructor: isInstructor }),
     });
-
     const data = await res.json();
 
     if (!data.success) {
-      if (data.errors) {
-        return showError(data.errors.map(e => e.message).join(', '));
-      }
-      return showError(data.message);
+      return showError(data.errors ? data.errors.map(e => e.message).join(', ') : data.message);
     }
 
     localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('user',  JSON.stringify(data.user));
     window.location.href = '/';
 
   } catch (err) {
@@ -73,7 +69,7 @@ async function register() {
 
 async function login() {
   hideError();
-  const email = document.getElementById('email')?.value.trim();
+  const email    = document.getElementById('email')?.value.trim();
   const password = document.getElementById('password')?.value;
 
   if (!email || !password) {
@@ -84,30 +80,28 @@ async function login() {
   if (btn) btn.textContent = 'Signing in...';
 
   try {
-    const res = await fetch(`${API}/users/login`, {
-      method: 'POST',
+    const res  = await fetch(`${API}/users/login`, {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body:    JSON.stringify({ email, password }),
     });
-
     const data = await res.json();
 
     if (!data.success) {
-      if (data.errors) {
-        return showError(data.errors.map(e => e.message).join(', '));
-      }
-      return showError(data.message);
+      return showError(data.errors ? data.errors.map(e => e.message).join(', ') : data.message);
     }
 
     localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('user',  JSON.stringify(data.user));
+
     if (data.user.role === 'admin') {
       window.location.href = '/admin-dashboard.html';
-    } else if (user.role === 'instructor') {
+    } else if (data.user.role === 'instructor') {
       window.location.href = '/instructor-dashboard.html';
     } else {
       window.location.href = '/dashboard.html';
     }
+
   } catch (err) {
     showError('Something went wrong. Try again.');
   } finally {

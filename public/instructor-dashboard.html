@@ -36,7 +36,6 @@
         radial-gradient(ellipse 60% 40% at 90% 100%, rgba(100,0,200,0.12) 0%, transparent 60%);
     }
 
-    /* ── NAV ── */
     nav {
       position: fixed; top: 0; width: 100%; z-index: 100;
       background: var(--glass);
@@ -59,16 +58,13 @@
     }
     .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
 
-    /* ── LAYOUT ── */
     .page { padding-top: 88px; padding-bottom: 5rem; max-width: 1200px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
 
-    /* ── PAGE HEADER ── */
     .page-header { margin-bottom: 2.5rem; }
     .page-header h1 { font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800; }
     .page-header h1 span { color: var(--cyan); }
     .page-header p { color: var(--muted); font-size: .9rem; margin-top: .35rem; }
 
-    /* ── STATS ── */
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
     @media(max-width:640px){ .stats-grid { grid-template-columns: 1fr; } }
 
@@ -86,7 +82,7 @@
       background: linear-gradient(135deg, var(--glow-color, rgba(0,212,255,.06)) 0%, transparent 60%);
       pointer-events: none;
     }
-    .stat-card.cyan  { --glow-color: rgba(0,212,255,.08); }
+    .stat-card.cyan    { --glow-color: rgba(0,212,255,.08); }
     .stat-card.emerald { --glow-color: rgba(0,229,160,.08); }
     .stat-card.violet  { --glow-color: rgba(167,139,250,.08); }
 
@@ -97,7 +93,6 @@
     .stat-card.violet  .stat-value { color: var(--violet); }
     .stat-icon { position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); font-size: 2rem; opacity: .15; }
 
-    /* ── CREATE FORM ── */
     .create-section {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -149,8 +144,6 @@
     .alert.success { background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.3); color: var(--emerald); }
     .alert.show    { display: block; }
 
-    /* ── COURSES LIST ── */
-    .courses-section {}
     .courses-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
     .courses-header h2 { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; }
     .courses-count { font-size: .78rem; color: var(--muted); background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: .2rem .75rem; }
@@ -173,8 +166,7 @@
     .course-thumb {
       width: 56px; height: 56px; border-radius: 10px;
       object-fit: cover; background: var(--bg-input);
-      border: 1px solid var(--border);
-      flex-shrink: 0;
+      border: 1px solid var(--border); flex-shrink: 0;
     }
     .course-thumb-placeholder {
       width: 56px; height: 56px; border-radius: 10px;
@@ -183,7 +175,6 @@
       font-size: 1.4rem; flex-shrink: 0;
     }
 
-    .course-info {}
     .course-title { font-family: 'Sora', sans-serif; font-size: .95rem; font-weight: 700; margin-bottom: .25rem; }
     .course-meta { display: flex; gap: 1rem; flex-wrap: wrap; }
     .meta-pill {
@@ -205,7 +196,6 @@
     .btn-action:hover { border-color: var(--cyan); color: var(--cyan); }
     .btn-action.danger:hover { border-color: var(--rose); color: var(--rose); }
 
-    /* ── LOADING ── */
     .spinner {
       width: 28px; height: 28px;
       border: 3px solid var(--border);
@@ -222,7 +212,6 @@
     .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .5; }
     .empty-state p { font-size: .9rem; }
 
-    /* ── MODAL ── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 200;
       background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
@@ -254,7 +243,6 @@
     }
     .btn-danger:hover { background: rgba(248,113,113,.25); }
 
-    /* ── TOAST ── */
     #toast {
       position: fixed; bottom: 2rem; right: 2rem; z-index: 300;
       background: var(--bg-card); border: 1px solid var(--border);
@@ -278,34 +266,30 @@
 </head>
 <body>
 
-  <!-- Nav -->
   <nav>
     <a href="/" class="logo">Edu<span>Flow</span></a>
     <div class="nav-right">
       <span class="nav-user">Hi, <strong id="nav-username">—</strong></span>
-      <a href="/" style="color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">Home</a>
+      <a href="/" style="color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .2s"
+         onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">Home</a>
       <button class="btn-ghost" onclick="logout()">Logout</button>
     </div>
   </nav>
 
   <div class="page">
 
-    <!-- Header -->
     <div class="page-header">
       <h1>Instructor <span>Dashboard</span></h1>
-      <p id="dashboard-subtitle">Manage your courses and track student progress</p>
+      <p>Manage your courses and track student progress</p>
     </div>
 
-    <!-- Loading state -->
     <div id="page-loading" class="loading-state">
       <div class="spinner"></div>
       <p style="margin-top:1rem">Loading your dashboard...</p>
     </div>
 
-    <!-- Main content (hidden until loaded) -->
     <div id="main-content" style="display:none">
 
-      <!-- Stats -->
       <div class="stats-grid">
         <div class="stat-card cyan">
           <p class="stat-label">Total Courses</p>
@@ -324,7 +308,6 @@
         </div>
       </div>
 
-      <!-- Create Course -->
       <div class="create-section">
         <h2 class="section-title"><span class="icon">＋</span> Create New Course</h2>
         <div id="create-error" class="alert error"></div>
@@ -348,7 +331,6 @@
         </button>
       </div>
 
-      <!-- My Courses -->
       <div class="courses-section">
         <div class="courses-header">
           <h2>My Courses</h2>
@@ -371,7 +353,6 @@
     </div>
   </div>
 
-  <!-- Delete Confirm Modal -->
   <div class="modal-overlay" id="delete-modal">
     <div class="modal">
       <div class="modal-header">
@@ -379,7 +360,8 @@
         <button class="modal-close" onclick="closeDeleteModal()">✕</button>
       </div>
       <p style="font-size:.875rem; color:var(--muted); line-height:1.6">
-        Are you sure you want to delete <strong id="delete-course-name" style="color:var(--text)"></strong>?
+        Are you sure you want to delete
+        <strong id="delete-course-name" style="color:var(--text)"></strong>?
         This action cannot be undone and all enrolled students will lose access.
       </p>
       <div class="modal-footer">
@@ -389,20 +371,20 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div id="toast"></div>
 
   <script>
-    // ─── Config ──────────────────────────────────────────────────────────────
-    const API = '';          // same origin — change to 'http://localhost:5000' if needed
+    // ─── Config ───────────────────────────────────────────────────────────────
+    const API   = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
     const token = localStorage.getItem('token');
     const user  = JSON.parse(localStorage.getItem('user') || 'null');
 
     // ─── Auth Guard ───────────────────────────────────────────────────────────
+    // ✅ مصلح: حذفنا الـ else if الأخيرة اللي كانت تعمل redirect لنفس الصفحة
     if (!token || !user) {
       window.location.href = '/login.html';
     } else if (user.role !== 'instructor' && !user.is_instructor) {
-      window.location.href = '/dashboard.html'; // redirect non-instructors
+      window.location.href = '/dashboard.html';
     }
 
     // ─── State ────────────────────────────────────────────────────────────────
@@ -410,7 +392,8 @@
     let deleteTarget = null;
 
     // ─── Init ─────────────────────────────────────────────────────────────────
-    document.getElementById('nav-username').textContent = user?.username || user?.name || 'Instructor';
+    document.getElementById('nav-username').textContent =
+      user?.username || user?.name || 'Instructor';
 
     async function init() {
       try {
@@ -418,25 +401,22 @@
         document.getElementById('page-loading').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
       } catch (err) {
+        console.error('Dashboard init error:', err);
         document.getElementById('page-loading').innerHTML =
-          `<p style="color:var(--rose)">Failed to load dashboard. <a href="/login.html" style="color:var(--cyan)">Re-login</a></p>`;
+          `<p style="color:var(--rose)">Failed to load dashboard.
+           <a href="/login.html" style="color:var(--cyan)">Re-login</a></p>`;
       }
     }
 
     // ─── Load Courses ─────────────────────────────────────────────────────────
+    // ✅ مصلح: نستخدم /api/courses/me/courses بدل ما نجيب كل الكورسات ونفلتر
     async function loadCourses() {
-      // Fetch ALL courses then filter by this instructor
-      const res = await apiFetch('/api/courses');
+      const res  = await apiFetch('/api/courses/me/courses');
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || 'Failed to fetch courses');
 
-      // Filter to only this instructor's courses
-      allCourses = (data.courses || []).filter(c => {
-        const instrId = c.instructor_id?._id || c.instructor_id;
-        return instrId === (user._id || user.id);
-      });
-
+      allCourses = data.courses || [];
       renderStats();
       renderCourses();
     }
@@ -446,16 +426,15 @@
       const totalStudents = allCourses.reduce((sum, c) => sum + (c.students?.length || 0), 0);
       document.getElementById('stat-courses').textContent  = allCourses.length;
       document.getElementById('stat-students').textContent = totalStudents;
-      // Lessons: not in the /api/courses payload — show placeholder or fetch separately
-      // For now show "—" unless you add a lessons count to the course response
       document.getElementById('stat-lessons').textContent  = '—';
-      document.getElementById('courses-count').textContent = `${allCourses.length} course${allCourses.length !== 1 ? 's' : ''}`;
+      document.getElementById('courses-count').textContent =
+        `${allCourses.length} course${allCourses.length !== 1 ? 's' : ''}`;
     }
 
     // ─── Render Courses ───────────────────────────────────────────────────────
     function renderCourses() {
-      const list  = document.getElementById('courses-list');
-      const empty = document.getElementById('courses-empty');
+      const list    = document.getElementById('courses-list');
+      const empty   = document.getElementById('courses-empty');
       const loading = document.getElementById('courses-loading');
 
       loading.style.display = 'none';
@@ -471,9 +450,12 @@
 
       list.innerHTML = allCourses.map((c, i) => {
         const studentCount = c.students?.length || 0;
-        const date = new Date(c.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+        const date = new Date(c.createdAt).toLocaleDateString('en-GB', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
         const thumb = c.thumbnail
-          ? `<img src="${escHtml(c.thumbnail)}" class="course-thumb" onerror="this.outerHTML='<div class=\\'course-thumb-placeholder\\'>📘</div>'" alt=""/>`
+          ? `<img src="${escHtml(c.thumbnail)}" class="course-thumb"
+               onerror="this.outerHTML='<div class=\\'course-thumb-placeholder\\'>📘</div>'" alt=""/>`
           : `<div class="course-thumb-placeholder">📘</div>`;
 
         return `
@@ -484,14 +466,17 @@
               <div class="course-meta">
                 <span class="meta-pill students">👥 ${studentCount} student${studentCount !== 1 ? 's' : ''}</span>
                 <span class="meta-pill date">📅 ${date}</span>
-                ${c.is_completed ? '<span class="meta-pill" style="color:var(--emerald);border-color:rgba(0,229,160,.2);background:rgba(0,229,160,.06)">✓ Completed</span>' : ''}
+                ${c.is_completed
+                  ? '<span class="meta-pill" style="color:var(--emerald);border-color:rgba(0,229,160,.2);background:rgba(0,229,160,.06)">✓ Completed</span>'
+                  : ''}
               </div>
             </div>
             <div class="course-actions">
               <button class="btn-action" onclick="viewCourse('${c._id}')">
                 <span>View</span> →
               </button>
-              <button class="btn-action danger" onclick="openDeleteModal('${c._id}', '${escHtml(c.title).replace(/'/g,"\\'")}')">
+              <button class="btn-action danger"
+                onclick="openDeleteModal('${c._id}', '${escHtml(c.title).replace(/'/g,"\\'")}')">
                 🗑
               </button>
             </div>
@@ -512,7 +497,7 @@
 
       const btn = document.getElementById('create-btn');
       const txt = document.getElementById('create-btn-text');
-      btn.disabled = true;
+      btn.disabled    = true;
       txt.textContent = 'Creating...';
 
       try {
@@ -526,7 +511,6 @@
         document.getElementById('new-description').value = '';
         document.getElementById('new-thumbnail').value   = '';
 
-        // Add to local state & re-render
         allCourses.unshift(data.course);
         renderStats();
         renderCourses();
@@ -535,7 +519,7 @@
       } catch (err) {
         showAlert('error', err.message);
       } finally {
-        btn.disabled = false;
+        btn.disabled    = false;
         txt.textContent = 'Create Course';
       }
     }
@@ -554,12 +538,11 @@
     async function confirmDelete() {
       if (!deleteTarget) return;
       const btn = document.getElementById('confirm-delete-btn');
-      btn.disabled = true;
+      btn.disabled    = true;
       btn.textContent = 'Deleting...';
 
       try {
-        const res  = await apiFetch(`/api/courses/${deleteTarget}`, 'DELETE');
-        // 204 No Content or 200
+        const res = await apiFetch(`/api/courses/${deleteTarget}`, 'DELETE');
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.message || 'Delete failed');
@@ -575,7 +558,7 @@
         showToast(err.message, 'error');
         closeDeleteModal();
       } finally {
-        btn.disabled = false;
+        btn.disabled    = false;
         btn.textContent = 'Delete Course';
       }
     }
@@ -619,7 +602,7 @@
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       t.textContent = msg;
-      t.className = `show toast-${type}`;
+      t.className   = `show toast-${type}`;
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { t.className = ''; }, 3500);
     }
@@ -630,7 +613,6 @@
       window.location.href = '/';
     }
 
-    // Close modal on backdrop click
     document.getElementById('delete-modal').addEventListener('click', function(e) {
       if (e.target === this) closeDeleteModal();
     });
