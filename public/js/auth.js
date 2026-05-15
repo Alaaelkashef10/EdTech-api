@@ -56,8 +56,11 @@ async function register() {
 
     localStorage.setItem('token', data.token);
     localStorage.setItem('user',  JSON.stringify(data.user));
-    window.location.href = '/';
-
+    if (data.user.role === 'instructor') {
+      window.location.href = '/instructor-dashboard.html';
+    } else {
+      window.location.href = '/';
+    }
   } catch (err) {
     showError('Something went wrong. Try again.');
   } finally {
