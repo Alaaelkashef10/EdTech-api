@@ -1,740 +1,771 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — EduFlow</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg:      #080C14;
-    --surface: #0D1321;
-    --surface2:#111827;
-    --border:  rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text:    #F1F5F9;
-    --muted:   #64748B;
-    --accent:  #38BDF8;
-    --green:   #34D399;
-    --amber:   #FBBF24;
-    --red:     #F87171;
-    --purple:  #A78BFA;
-    --font:    'DM Sans', sans-serif;
-    --mono:    'DM Mono', monospace;
-  }
-  html { font-size: 15px; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
-  .shell { display: flex; min-height: 100vh; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — EduFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080C14;
+      --surface: #0D1321;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --text: #F1F5F9;
+      --muted: #64748B;
+      --accent: #38BDF8;
+      --green: #34D399;
+      --amber: #FBBF24;
+      --red: #F87171;
+      --purple: #A78BFA;
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+    html { font-size: 15px; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+    .shell { display: flex; min-height: 100vh; }
 
-  /* Sidebar */
-  .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:28px 0; position:sticky; top:0; height:100vh; }
-  .logo { display:flex; align-items:center; gap:10px; padding:0 20px 28px; border-bottom:1px solid var(--border); margin-bottom:16px; }
-  .logo-mark { width:32px; height:32px; background:linear-gradient(135deg,var(--accent),var(--purple)); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; font-weight:600; }
-  .logo-text { font-size:15px; font-weight:600; letter-spacing:-0.01em; }
-  .logo-sub  { font-size:10px; color:var(--muted); font-family:var(--mono); letter-spacing:0.05em; text-transform:uppercase; }
-  .nav-group { padding:0 12px; margin-bottom:8px; }
-  .nav-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; padding:0 8px; margin-bottom:6px; }
-  .nav-item  { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; font-size:13.5px; color:var(--muted); cursor:pointer; transition:all .15s; text-decoration:none; }
-  .nav-item:hover { background:var(--surface2); color:var(--text); }
-  .nav-item.active { background:rgba(56,189,248,.1); color:var(--accent); }
-  .nav-icon  { font-size:17px; line-height:1; }
-  .nav-badge { margin-left:auto; background:rgba(56,189,248,.15); color:var(--accent); font-size:10px; font-family:var(--mono); padding:2px 7px; border-radius:999px; }
-  .sidebar-footer { margin-top:auto; padding:16px 20px 0; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px; }
-  .avatar-sm { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#a855f7); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#fff; flex-shrink:0; }
-  .user-meta { flex:1; overflow:hidden; }
-  .user-meta strong { display:block; font-size:12.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .user-meta span   { font-size:11px; color:var(--muted); }
+    /* Sidebar */
+    .sidebar { width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 28px 0; position: sticky; top: 0; height: 100vh; }
+    .logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .logo-mark { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent), var(--purple)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff; font-weight: 600; }
+    .logo-text { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    .nav-group { padding: 0 12px; margin-bottom: 8px; }
+    .nav-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 8px; margin-bottom: 6px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13.5px; color: var(--muted); cursor: pointer; transition: all .15s; text-decoration: none; border: none; background: none; width: 100%; font-family: var(--font); }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(56,189,248,.1); color: var(--accent); }
+    .nav-icon { font-size: 17px; line-height: 1; }
+    .sidebar-footer { margin-top: auto; padding: 16px 20px 0; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .avatar-sm { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
+    .user-meta { flex: 1; overflow: hidden; }
+    .user-meta strong { display: block; font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-meta span { font-size: 11px; color: var(--muted); }
 
-  /* Tab views */
-  .tab-view { display:none; }
-  .tab-view.active { display:block; }
+    /* Tab views */
+    .tab-view { display: none; }
+    .tab-view.active { display: block; }
 
-  /* Main */
-  .main { flex:1; padding:32px 36px; overflow-x:hidden; }
-  .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:32px; }
-  .page-title    { font-size:22px; font-weight:600; letter-spacing:-0.02em; }
-  .page-subtitle { font-size:13px; color:var(--muted); margin-top:3px; }
-  .header-actions { display:flex; gap:10px; align-items:center; }
-  .btn { display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:9px; font-size:13px; font-family:var(--font); font-weight:500; cursor:pointer; border:none; transition:all .15s; text-decoration:none; }
-  .btn-ghost { background:var(--surface2); color:var(--muted); border:1px solid var(--border); }
-  .btn-ghost:hover { color:var(--text); border-color:var(--border2); }
-  .btn:disabled { opacity:.4; cursor:not-allowed; }
+    /* Main */
+    .main { flex: 1; padding: 32px 36px; overflow-x: hidden; }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 32px; }
+    .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+    .page-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 9px; font-size: 13px; font-family: var(--font); font-weight: 500; cursor: pointer; border: none; transition: all .15s; text-decoration: none; }
+    .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+    .btn-danger { background: rgba(248,113,113,.15); color: var(--red); border: 1px solid rgba(248,113,113,.3); }
+    .btn-danger:hover { background: rgba(248,113,113,.25); }
+    .btn-primary { background: var(--accent); color: #0f172a; font-weight: 600; }
+    .btn-primary:hover { opacity: .9; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
 
-  /* Stats */
-  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; margin-bottom:32px; }
-  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; position:relative; overflow:hidden; transition:border-color .2s; }
-  .stat-card:hover { border-color:var(--border2); }
-  .stat-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 14px 0 80px; opacity:.06; }
-  .stat-card.c-blue::before   { background:var(--accent); }
-  .stat-card.c-green::before  { background:var(--green); }
-  .stat-card.c-purple::before { background:var(--purple); }
-  .stat-card.c-amber::before  { background:var(--amber); }
-  .stat-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:14px; }
-  .stat-card.c-blue   .stat-icon { background:rgba(56,189,248,.12); color:var(--accent); }
-  .stat-card.c-green  .stat-icon { background:rgba(52,211,153,.12); color:var(--green); }
-  .stat-card.c-purple .stat-icon { background:rgba(167,139,250,.12); color:var(--purple); }
-  .stat-card.c-amber  .stat-icon { background:rgba(251,191,36,.12); color:var(--amber); }
-  .stat-label { font-size:12px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em; }
-  .stat-value { font-size:30px; font-weight:600; letter-spacing:-.03em; line-height:1; font-family:var(--mono); }
-  .stat-delta { margin-top:10px; font-size:11.5px; color:var(--muted); min-height:16px; }
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; position: relative; overflow: hidden; transition: border-color .2s; }
+    .stat-card:hover { border-color: var(--border2); }
+    .stat-card::before { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 0 14px 0 80px; opacity: .06; }
+    .stat-card.c-blue::before { background: var(--accent); }
+    .stat-card.c-green::before { background: var(--green); }
+    .stat-card.c-purple::before { background: var(--purple); }
+    .stat-card.c-amber::before { background: var(--amber); }
+    .stat-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; margin-bottom: 14px; }
+    .stat-card.c-blue .stat-icon { background: rgba(56,189,248,.12); color: var(--accent); }
+    .stat-card.c-green .stat-icon { background: rgba(52,211,153,.12); color: var(--green); }
+    .stat-card.c-purple .stat-icon { background: rgba(167,139,250,.12); color: var(--purple); }
+    .stat-card.c-amber .stat-icon { background: rgba(251,191,36,.12); color: var(--amber); }
+    .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+    .stat-value { font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1; font-family: var(--mono); }
+    .stat-delta { margin-top: 10px; font-size: 11.5px; color: var(--muted); min-height: 16px; }
 
-  /* Skeleton */
-  .skeleton { background:linear-gradient(90deg,var(--surface2) 25%,rgba(255,255,255,.04) 50%,var(--surface2) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  .skel-val { height:30px; width:60px; margin-bottom:10px; }
+    /* Skeleton */
+    .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, rgba(255,255,255,.04) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skel-val { height: 30px; width: 60px; margin-bottom: 10px; }
 
-  /* Table */
-  .table-section { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-  .table-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:18px 20px; border-bottom:1px solid var(--border); }
-  .table-toolbar h2 { font-size:15px; font-weight:600; }
-  .toolbar-right { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-  .search-box { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:9px; padding:7px 12px; transition:border-color .15s; }
-  .search-box:focus-within { border-color:var(--accent); }
-  .search-box input { background:none; border:none; outline:none; font-family:var(--font); font-size:13px; color:var(--text); width:180px; }
-  .search-box input::placeholder { color:var(--muted); }
-  .filters { display:flex; gap:6px; }
-  .filter-pill { padding:6px 13px; border-radius:999px; font-size:12px; font-weight:500; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; font-family:var(--font); }
-  .filter-pill:hover { border-color:var(--border2); color:var(--text); }
-  .filter-pill.active { background:rgba(56,189,248,.12); color:var(--accent); border-color:rgba(56,189,248,.3); }
-  table { width:100%; border-collapse:collapse; }
-  thead th { text-align:left; padding:11px 20px; font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; background:rgba(255,255,255,.02); border-bottom:1px solid var(--border); }
-  tbody tr { border-bottom:1px solid var(--border); transition:background .12s; }
-  tbody tr:last-child { border-bottom:none; }
-  tbody tr:hover { background:rgba(255,255,255,.02); }
-  td { padding:13px 20px; font-size:13.5px; vertical-align:middle; }
-  .user-cell { display:flex; align-items:center; gap:12px; }
-  .avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; }
-  .av-blue   { background:rgba(56,189,248,.18); color:var(--accent); }
-  .av-green  { background:rgba(52,211,153,.18); color:var(--green); }
-  .av-purple { background:rgba(167,139,250,.18); color:var(--purple); }
-  .av-amber  { background:rgba(251,191,36,.18); color:var(--amber); }
-  .av-red    { background:rgba(248,113,113,.18); color:var(--red); }
-  .av-teal   { background:rgba(45,212,191,.18); color:#2dd4bf; }
-  .uname  { font-weight:500; font-size:13.5px; }
-  .uemail { font-size:11.5px; color:var(--muted); margin-top:1px; }
-  .role-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:500; }
-  .role-admin      { background:rgba(56,189,248,.12); color:var(--accent); }
-  .role-instructor { background:rgba(167,139,250,.12); color:var(--purple); }
-  .role-student    { background:rgba(255,255,255,.06); color:var(--muted); }
-  .mono-sm { font-family:var(--mono); font-size:12px; color:var(--muted); }
-  /* only delete action remains */
-  .action-menu { display:flex; gap:4px; justify-content:flex-end; opacity:.4; transition:opacity .15s; }
-  tbody tr:hover .action-menu { opacity:1; }
-  .icon-btn { width:28px; height:28px; border-radius:7px; background:none; border:1px solid var(--border); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .12s; font-family:var(--font); }
-  .icon-btn.danger:hover { background:rgba(248,113,113,.1); color:var(--red); border-color:rgba(248,113,113,.3); }
-  .table-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-top:1px solid var(--border); font-size:12.5px; color:var(--muted); flex-wrap:wrap; gap:10px; }
-  .pagination { display:flex; gap:4px; }
-  .pg-btn { min-width:30px; height:30px; padding:0 6px; border-radius:7px; border:1px solid var(--border); background:none; color:var(--muted); font-size:12.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .12s; font-family:var(--font); }
-  .pg-btn:hover { border-color:var(--border2); color:var(--text); }
-  .pg-btn.active { background:var(--accent); border-color:var(--accent); color:#0a1a2e; font-weight:600; }
-  .pg-btn:disabled { opacity:.3; cursor:not-allowed; }
+    /* Table */
+    .table-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .section-title { font-size: 14px; font-weight: 600; }
+    .section-count { font-size: 12px; color: var(--muted); background: var(--surface2); padding: 3px 10px; border-radius: 20px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { text-align: left; padding: 12px 20px; font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; background: var(--surface2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    tbody td { padding: 14px 20px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    tbody tr:hover { background: rgba(255,255,255,.02); }
+    tbody tr:last-child td { border-bottom: none; }
 
-  /* Courses table extras */
-  .course-thumb { width:38px; height:38px; border-radius:8px; object-fit:cover; background:var(--surface2); border:1px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
-  .course-thumb img { width:100%; height:100%; border-radius:8px; object-fit:cover; }
+    .cell-user { display: flex; align-items: center; gap: 12px; }
+    .cell-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
+    .cell-name { font-weight: 500; font-size: 13.5px; }
+    .cell-email { font-size: 12px; color: var(--muted); margin-top: 1px; }
 
-  /* State boxes */
-  .state-box { text-align:center; padding:52px 20px; color:var(--muted); }
-  .state-box .state-icon { font-size:36px; margin-bottom:12px; }
-  .state-box p    { font-size:14px; margin-bottom:8px; }
-  .state-box .hint { font-size:12px; opacity:.6; font-family:var(--mono); }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 500; }
+    .badge-admin { background: rgba(248,113,113,.12); color: var(--red); }
+    .badge-instructor { background: rgba(56,189,248,.12); color: var(--accent); }
+    .badge-student { background: rgba(52,211,153,.12); color: var(--green); }
 
-  /* Spinner */
-  .spinner { width:20px; height:20px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
-  @keyframes spin { to { transform:rotate(360deg); } }
+    .actions { display: flex; gap: 6px; }
+    .action-btn { padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all .15s; font-family: var(--font); }
+    .action-btn:hover { border-color: var(--border2); color: var(--text); }
+    .action-btn.edit:hover { border-color: var(--accent); color: var(--accent); }
+    .action-btn.delete:hover { border-color: var(--red); color: var(--red); }
 
-  /* Toasts */
-  .toast-area { position:fixed; bottom:24px; right:24px; display:flex; flex-direction:column; gap:8px; z-index:100; }
-  .toast { background:var(--surface); border:1px solid var(--border2); border-radius:10px; padding:12px 16px; font-size:13px; display:flex; align-items:center; gap:10px; animation:toastIn .25s ease; max-width:300px; }
-  .toast.t-error   { border-color:rgba(248,113,113,.4); }
-  .toast.t-success { border-color:rgba(52,211,153,.3); }
-  @keyframes toastIn { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 13px; }
+    .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: .5; }
 
-  ::-webkit-scrollbar { width:6px; }
-  ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:3px; }
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 420px; width: 100%; animation: popIn .25s cubic-bezier(.175,.885,.32,1.275); }
+    @keyframes popIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; transition: color .2s; }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+    .modal-body strong { color: var(--text); }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; }
+    .modal-field { margin-bottom: 14px; }
+    .modal-field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .modal-field input, .modal-field select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--text); font-family: var(--font); outline: none; }
+    .modal-field input:focus, .modal-field select:focus { border-color: var(--accent); }
+    .modal-field select { cursor: pointer; }
 
-  @media(max-width:900px){ .sidebar{display:none} .main{padding:20px} }
-  @media(max-width:600px){
-    .stats-grid{grid-template-columns:1fr 1fr}
-    td:nth-child(3),th:nth-child(3),
-    td:nth-child(4),th:nth-child(4){ display:none }
-  }
-</style>
+    /* Toast */
+    #toast { position: fixed; bottom: 24px; right: 24px; z-index: 300; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.4); transform: translateY(100px); opacity: 0; transition: all .35s cubic-bezier(.175,.885,.32,1.275); max-width: 320px; }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.toast-success { border-color: rgba(52,211,153,.4); }
+    #toast.toast-error { border-color: rgba(248,113,113,.4); }
+
+    /* Loading */
+    .loading-row { text-align: center; padding: 40px; color: var(--muted); }
+    .spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { padding: 20px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 <body>
 
-<script>
-  window.API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
-    ? 'http://127.0.0.1:3000/api' : '/api';
-</script>
-
 <div class="shell">
-
-  <!-- ═══ SIDEBAR — only links with real endpoints ═══ -->
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-mark">E</div>
       <div>
         <div class="logo-text">EduFlow</div>
-        <div class="logo-sub">Admin</div>
+        <div class="logo-sub">Admin Panel</div>
       </div>
     </div>
 
     <div class="nav-group">
       <div class="nav-label">Overview</div>
-      <!-- GET /api/admin/stats -->
-      <a class="nav-item active" id="nav-dashboard" href="#" onclick="switchTab('dashboard',this)">
-        <span class="nav-icon">⊞</span> Dashboard
-        <span class="nav-badge" id="live-badge">Live</span>
-      </a>
-      <!-- GET /api/admin/users -->
-      <a class="nav-item" id="nav-users" href="#" onclick="switchTab('users',this)">
-        <span class="nav-icon">👥</span> Users
-      </a>
-      <!-- GET /api/admin/courses -->
-      <a class="nav-item" id="nav-courses" href="#" onclick="switchTab('courses',this)">
-        <span class="nav-icon">📚</span> Courses
-      </a>
+      <button class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
     </div>
 
     <div class="nav-group">
-      <div class="nav-label">System</div>
-      <a class="nav-item" href="#" onclick="logout()">
-        <span class="nav-icon">🚪</span> Logout
-      </a>
+      <div class="nav-label">Management</div>
+      <button class="nav-item" onclick="switchTab('users')" id="nav-users">
+        <span class="nav-icon">👥</span> Users
+      </button>
+      <button class="nav-item" onclick="switchTab('courses')" id="nav-courses">
+        <span class="nav-icon">📚</span> Courses
+      </button>
+      <button class="nav-item" onclick="switchTab('lessons')" id="nav-lessons">
+        <span class="nav-icon">📝</span> Lessons
+      </button>
     </div>
 
     <div class="sidebar-footer">
-      <div class="avatar-sm" id="sb-avatar">—</div>
+      <div class="avatar-sm" id="admin-avatar">A</div>
       <div class="user-meta">
-        <strong id="sb-name">—</strong>
-        <span id="sb-role">—</span>
+        <strong id="admin-name">Admin</strong>
+        <span id="admin-role">administrator</span>
       </div>
     </div>
   </aside>
 
-  <!-- ═══ MAIN ═══ -->
+  <!-- Main Content -->
   <main class="main">
-
-    <!-- ══ TAB: DASHBOARD (stats) ══ -->
-    <div class="tab-view active" id="tab-dashboard">
+    <!-- Overview Tab -->
+    <div class="tab-view active" id="tab-overview">
       <div class="page-header">
         <div>
-          <div class="page-title">Dashboard</div>
-          <div class="page-subtitle" id="page-subtitle">Connecting to database…</div>
+          <div class="page-title">Dashboard Overview</div>
+          <div class="page-subtitle">Real-time platform metrics</div>
         </div>
         <div class="header-actions">
-          <!-- GET /api/admin/stats -->
-          <button class="btn btn-ghost" id="refresh-btn" onclick="loadStats()">↻ Refresh</button>
+          <button class="btn btn-ghost" onclick="logout()">🚪 Logout</button>
         </div>
       </div>
 
-      <!-- Stats from GET /api/admin/stats -->
-      <div class="stats-grid">
+      <div class="stats-grid" id="stats-grid">
         <div class="stat-card c-blue">
           <div class="stat-icon">👥</div>
           <div class="stat-label">Total Users</div>
-          <div class="skeleton skel-val" id="sk-users"></div>
-          <div class="stat-value" id="total-users" style="display:none">—</div>
-          <div class="stat-delta" id="d-users"></div>
+          <div class="skeleton skel-val"></div>
+          <div class="stat-delta">Loading…</div>
         </div>
         <div class="stat-card c-green">
           <div class="stat-icon">🎓</div>
           <div class="stat-label">Students</div>
-          <div class="skeleton skel-val" id="sk-students"></div>
-          <div class="stat-value" id="total-students" style="display:none">—</div>
-          <div class="stat-delta" id="d-students"></div>
+          <div class="skeleton skel-val"></div>
+          <div class="stat-delta">Loading…</div>
         </div>
         <div class="stat-card c-purple">
           <div class="stat-icon">🏫</div>
           <div class="stat-label">Instructors</div>
-          <div class="skeleton skel-val" id="sk-instructors"></div>
-          <div class="stat-value" id="total-instructors" style="display:none">—</div>
-          <div class="stat-delta" id="d-instructors"></div>
+          <div class="skeleton skel-val"></div>
+          <div class="stat-delta">Loading…</div>
         </div>
         <div class="stat-card c-amber">
           <div class="stat-icon">📚</div>
           <div class="stat-label">Total Courses</div>
-          <div class="skeleton skel-val" id="sk-courses-stat"></div>
-          <div class="stat-value" id="total-courses-stat" style="display:none">—</div>
-          <div class="stat-delta" id="d-courses"></div>
+          <div class="skeleton skel-val"></div>
+          <div class="stat-delta">Loading…</div>
         </div>
       </div>
     </div>
 
-    <!-- ══ TAB: USERS ══ -->
+    <!-- Users Tab -->
     <div class="tab-view" id="tab-users">
       <div class="page-header">
         <div>
-          <div class="page-title">Users</div>
-          <div class="page-subtitle" id="users-subtitle">Loading…</div>
+          <div class="page-title">User Management</div>
+          <div class="page-subtitle">Manage all registered users</div>
         </div>
         <div class="header-actions">
-          <!-- triggers GET /api/admin/users -->
-          <button class="btn btn-ghost" onclick="loadUsers()">↻ Refresh</button>
-          <!-- Export works on already-fetched data, no extra endpoint needed -->
-          <button class="btn btn-ghost" id="export-btn" onclick="exportCSV()" disabled>↓ Export CSV</button>
+          <button class="btn btn-ghost" onclick="logout()">🚪 Logout</button>
         </div>
       </div>
 
       <div class="table-section">
-        <div class="table-toolbar">
-          <h2>All Users</h2>
-          <div class="toolbar-right">
-            <div class="search-box">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-              <input type="text" id="search" placeholder="Search name or email…" oninput="filterUsers()"/>
-            </div>
-            <div class="filters">
-              <button class="filter-pill active" onclick="setRole(this,'all')">All</button>
-              <button class="filter-pill" onclick="setRole(this,'admin')">Admin</button>
-              <button class="filter-pill" onclick="setRole(this,'instructor')">Instructor</button>
-              <button class="filter-pill" onclick="setRole(this,'student')">Student</button>
-            </div>
-          </div>
+        <div class="section-header">
+          <div class="section-title">All Users</div>
+          <div class="section-count" id="users-count">0 users</div>
         </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th style="width:35%">User</th>
-              <th style="width:15%">Role</th>
-              <th style="width:20%">Joined</th>
-              <th style="width:10%;text-align:right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="user-tbody">
-            <tr><td colspan="4">
-              <div class="state-box">
-                <div><span class="spinner"></span></div>
-                <p style="margin-top:14px">Fetching users…</p>
-              </div>
-            </td></tr>
-          </tbody>
-        </table>
-
-        <div class="table-footer">
-          <span id="row-count">—</span>
-          <div class="pagination" id="pagination"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr><td colspan="4" class="loading-row"><div class="spinner"></div>Loading users…</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- ══ TAB: COURSES ══ -->
+    <!-- Courses Tab -->
     <div class="tab-view" id="tab-courses">
       <div class="page-header">
         <div>
-          <div class="page-title">Courses</div>
-          <div class="page-subtitle" id="courses-subtitle">Loading…</div>
+          <div class="page-title">Course Management</div>
+          <div class="page-subtitle">Manage all platform courses</div>
         </div>
         <div class="header-actions">
-          <!-- triggers GET /api/admin/courses -->
-          <button class="btn btn-ghost" onclick="loadCourses()">↻ Refresh</button>
+          <button class="btn btn-ghost" onclick="logout()">🚪 Logout</button>
         </div>
       </div>
 
       <div class="table-section">
-        <div class="table-toolbar">
-          <h2>All Courses</h2>
-          <div class="toolbar-right">
-            <div class="search-box">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-              <input type="text" id="course-search" placeholder="Search title or instructor…" oninput="filterCourses()"/>
-            </div>
-          </div>
+        <div class="section-header">
+          <div class="section-title">All Courses</div>
+          <div class="section-count" id="courses-count">0 courses</div>
         </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th style="width:40%">Course</th>
-              <th style="width:25%">Instructor</th>
-              <th style="width:15%">Students</th>
-              <th style="width:20%">Created</th>
-            </tr>
-          </thead>
-          <tbody id="course-tbody">
-            <tr><td colspan="4">
-              <div class="state-box">
-                <div><span class="spinner"></span></div>
-                <p style="margin-top:14px">Fetching courses…</p>
-              </div>
-            </td></tr>
-          </tbody>
-        </table>
-
-        <div class="table-footer">
-          <span id="course-row-count">—</span>
-          <div class="pagination" id="course-pagination"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Instructor</th>
+                <th>Students</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="courses-table-body">
+              <tr><td colspan="5" class="loading-row"><div class="spinner"></div>Loading courses…</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
+    <!-- Lessons Tab -->
+    <div class="tab-view" id="tab-lessons">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Lesson Management</div>
+          <div class="page-subtitle">Manage all lessons across courses</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="logout()">🚪 Logout</button>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="section-header">
+          <div class="section-title">All Lessons</div>
+          <div class="section-count" id="lessons-count">0 lessons</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Lesson</th>
+                <th>Course</th>
+                <th>Order</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="lessons-table-body">
+              <tr><td colspan="5" class="loading-row"><div class="spinner"></div>Loading lessons…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 
-<div class="toast-area" id="toasts"></div>
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Confirm Delete</h3>
+      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete <strong id="delete-target-name"></strong>?<<br>
+      This action cannot be undone.
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()" id="confirm-delete-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit User</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label>Username</label>
+        <input type="text" id="edit-username" placeholder="Username">
+      </div>
+      <div class="modal-field">
+        <label>Email</label>
+        <input type="email" id="edit-email" placeholder="user@example.com">
+      </div>
+      <div class="modal-field">
+        <label>Role</label>
+        <select id="edit-role">
+          <option value="student">Student</option>
+          <option value="instructor">Instructor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmEdit()" id="confirm-edit-btn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
 
 <script>
-/* ── Auth guard ── */
-const token = localStorage.getItem('token');
-const user  = JSON.parse(localStorage.getItem('user') || 'null');
+  // ─── Config ──────────────────────────────────────────────────────────
+  const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-if (!token || !user || user.role !== 'admin') {
-  showToast('🔒', 'Access denied — admins only.', 'error');
-  setTimeout(() => { window.location.href = '/'; }, 1500);
-}
-
-/* ── Sidebar user ── */
-const initials = n => (n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-document.getElementById('sb-avatar').textContent = initials(user?.username || user?.name || '');
-document.getElementById('sb-name').textContent   = user?.username || user?.name || 'Admin';
-document.getElementById('sb-role').textContent   = user?.role || '';
-
-/* ── Helpers ── */
-const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const cap = s => s ? s.charAt(0).toUpperCase()+s.slice(1) : '';
-const COLORS = ['av-blue','av-green','av-purple','av-amber','av-red','av-teal'];
-const colorFor = name => COLORS[(name||'').charCodeAt(0) % COLORS.length];
-
-/* ── Auth fetch wrapper ── */
-async function api(path, method = 'GET') {
-  const res = await fetch(`${window.API_BASE}${path}`, {
-    method,
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (res.status === 401 || res.status === 403) {
-    showToast('🔒', 'Session expired — please log in again.', 'error');
-    setTimeout(() => { window.location.href = '/'; }, 2000);
-    throw new Error('Unauthorized');
-  }
-  if (!res.ok) throw new Error(`Server error ${res.status}`);
-  if (res.status === 204) return null;
-  return res.json();
-}
-
-/* ═══════════════════════════════════════════════
-   TAB SWITCHING
-═══════════════════════════════════════════════ */
-const TABS = ['dashboard','users','courses'];
-let tabLoaded = {};
-
-function switchTab(name, el) {
-  // update nav active state
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
-
-  // show correct view
-  TABS.forEach(t => document.getElementById(`tab-${t}`).classList.remove('active'));
-  document.getElementById(`tab-${name}`).classList.add('active');
-
-  // lazy-load data once per tab
-  if (!tabLoaded[name]) {
-    tabLoaded[name] = true;
-    if (name === 'users')   loadUsers();
-    if (name === 'courses') loadCourses();
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   DASHBOARD STATS  →  GET /api/admin/stats
-═══════════════════════════════════════════════ */
-async function loadStats() {
-  setRefreshing(true);
-  try {
-    const data = await api('/admin/stats');
-    if (!data.success) throw new Error(data.message || 'API error');
-
-    const s = data.stats || data;  // support {stats:{...}} or flat
-    document.getElementById('total-users').textContent        = s.totalUsers       ?? '—';
-    document.getElementById('total-students').textContent     = s.totalStudents    ?? '—';
-    document.getElementById('total-instructors').textContent  = s.totalInstructors ?? '—';
-    document.getElementById('total-courses-stat').textContent = s.totalCourses     ?? '—';
-
-    // delta hints
-    const tot = s.totalUsers || 1;
-    document.getElementById('d-users').textContent        = `${s.totalStudents??0} students · ${s.totalInstructors??0} instructors`;
-    document.getElementById('d-students').textContent     = tot ? Math.round((s.totalStudents||0)/tot*100)+'% of users' : '';
-    document.getElementById('d-instructors').textContent  = tot ? Math.round((s.totalInstructors||0)/tot*100)+'% of users' : '';
-    document.getElementById('d-courses').textContent      = `${s.totalCourses??0} published courses`;
-
-    revealStats();
-    document.getElementById('page-subtitle').textContent =
-      `Last synced ${new Date().toLocaleTimeString()}`;
-    showToast('✓', 'Stats refreshed', 'success');
-  } catch(err) {
-    console.error(err);
-    document.getElementById('page-subtitle').textContent = 'Could not load stats';
-    showToast('⚠', err.message, 'error');
-  } finally {
-    setRefreshing(false);
-  }
-}
-
-function revealStats() {
-  ['users','students','instructors','courses-stat'].forEach(k => {
-    document.getElementById(`sk-${k}`)?.remove();
-    const el = document.getElementById(`total-${k}`);
-    if (el) el.style.display = '';
-  });
-}
-
-function setRefreshing(v) {
-  const btn = document.getElementById('refresh-btn');
-  if (!btn) return;
-  btn.innerHTML = v ? '<span class="spinner"></span> Loading…' : '↻ Refresh';
-  btn.disabled  = v;
-  document.getElementById('live-badge').textContent = v ? '…' : 'Live';
-}
-
-/* ═══════════════════════════════════════════════
-   USERS  →  GET /api/admin/users
-             DELETE /api/admin/users/:id
-═══════════════════════════════════════════════ */
-let ALL_USERS = [], filteredUsers = [], roleFilter = 'all', userPage = 1;
-const PER = 10;
-
-async function loadUsers() {
-  document.getElementById('user-tbody').innerHTML =
-    `<tr><td colspan="4"><div class="state-box"><div><span class="spinner"></span></div><p style="margin-top:14px">Fetching users…</p></div></td></tr>`;
-
-  try {
-    const data = await api('/admin/users');
-    if (!data.success) throw new Error(data.message || 'API error');
-
-    ALL_USERS = data.users || [];
-    document.getElementById('users-subtitle').textContent =
-      `${ALL_USERS.length} users · last synced ${new Date().toLocaleTimeString()}`;
-    document.getElementById('export-btn').disabled = false;
-    filterUsers();
-    showToast('✓', `Loaded ${ALL_USERS.length} users`, 'success');
-  } catch(err) {
-    document.getElementById('user-tbody').innerHTML =
-      `<tr><td colspan="4"><div class="state-box"><div class="state-icon">⚠️</div>
-       <p>${esc(err.message)}</p><div class="hint">Check server or JWT token</div>
-       <br><button class="btn btn-ghost" onclick="loadUsers()" style="margin:12px auto">↻ Retry</button>
-       </div></td></tr>`;
-    showToast('⚠', err.message, 'error');
-  }
-}
-
-function setRole(btn, role) {
-  roleFilter = role; userPage = 1;
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filterUsers();
-}
-
-function filterUsers() {
-  const q = (document.getElementById('search').value || '').toLowerCase();
-  filteredUsers = ALL_USERS.filter(u => {
-    const name  = (u.username || u.name || '').toLowerCase();
-    const email = (u.email || '').toLowerCase();
-    return (roleFilter === 'all' || u.role === roleFilter) && (name.includes(q) || email.includes(q));
-  });
-  userPage = 1;
-  renderUsers();
-}
-
-function renderUsers() {
-  const tbody = document.getElementById('user-tbody');
-  const total = filteredUsers.length;
-  const start = (userPage - 1) * PER;
-  const slice = filteredUsers.slice(start, start + PER);
-
-  document.getElementById('row-count').textContent = total === 0
-    ? 'No users found'
-    : `Showing ${start+1}–${Math.min(start+PER,total)} of ${total} users`;
-
-  if (total === 0) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="state-box">
-      <div class="state-icon">🔍</div><p>No users match your filter</p>
-      <div class="hint">Try a different name, email, or role</div>
-    </div></td></tr>`;
-    document.getElementById('pagination').innerHTML = '';
-    return;
+  // ─── Auth Guard ─────────────────────────────────────────────────────
+  if (!token || !user) {
+    window.location.href = '/login.html';
+  } else if (user.role !== 'admin') {
+    window.location.href = '/dashboard.html';
   }
 
-  tbody.innerHTML = slice.map(u => {
-    const name   = u.username || u.name || 'Unknown';
-    const email  = u.email || '—';
-    const role   = u.role  || 'student';
-    const joined = u.createdAt
-      ? new Date(u.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
-      : '—';
-    const roleIcon = role==='admin'?'⬡':role==='instructor'?'◈':'○';
-    const uid = esc(u._id || u.id || '');
+  // Set admin info in sidebar
+  document.getElementById('admin-name').textContent = user?.username || 'Admin';
+  document.getElementById('admin-avatar').textContent = (user?.username || 'A').charAt(0).toUpperCase();
 
-    return `<tr>
-      <td><div class="user-cell">
-        <div class="avatar ${colorFor(name)}">${initials(name)}</div>
-        <div><div class="uname">${esc(name)}</div><div class="uemail">${esc(email)}</div></div>
-      </div></td>
-      <td><span class="role-badge role-${role}">${roleIcon} ${cap(role)}</span></td>
-      <td><span class="mono-sm">${joined}</span></td>
-      <td>
-        <div class="action-menu">
-          <!-- DELETE /api/admin/users/:id -->
-          <button class="icon-btn danger" title="Delete user" onclick="deleteUser('${uid}','${esc(name.replace(/'/g,"\\'"))}')">✕</button>
+  // ─── State ──────────────────────────────────────────────────────────
+  let allUsers = [];
+  let allCourses = [];
+  let allLessons = [];
+  let deleteTarget = null; // { type, id, name }
+  let editTarget = null;   // user id
+
+  // ─── Tab Switching ───────────────────────────────────────────────────
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    document.getElementById('nav-' + tabName).classList.add('active');
+
+    if (tabName === 'users' && allUsers.length === 0) loadUsers();
+    if (tabName === 'courses' && allCourses.length === 0) loadCourses();
+    if (tabName === 'lessons' && allLessons.length === 0) loadLessons();
+  }
+
+  // ─── API Helper ─────────────────────────────────────────────────────
+  function apiFetch(path, method = 'GET', body = null) {
+    const opts = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+    if (body) opts.body = JSON.stringify(body);
+    return fetch(API + path, opts);
+  }
+
+  // ─── Stats ──────────────────────────────────────────────────────────
+  async function loadStats() {
+    try {
+      const res = await apiFetch('/api/admin/stats');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      const stats = data.stats;
+      document.getElementById('stats-grid').innerHTML = `
+        <div class="stat-card c-blue">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value">${stats.totalUsers}</div>
+          <div class="stat-delta">All registered accounts</div>
         </div>
-      </td>
-    </tr>`;
-  }).join('');
-
-  renderPagination('pagination', total, userPage, p => { userPage=p; renderUsers(); });
-}
-
-/* DELETE /api/admin/users/:id */
-async function deleteUser(id, name) {
-  if (!id) { showToast('⚠','No user ID','error'); return; }
-  if (!confirm(`Remove "${name}"? This cannot be undone.`)) return;
-  try {
-    await api(`/admin/users/${id}`, 'DELETE');
-    ALL_USERS = ALL_USERS.filter(u => (u._id||u.id) !== id);
-    filterUsers();
-    showToast('✓', `"${name}" removed`, 'success');
-  } catch(err) {
-    showToast('✕', err.message, 'error');
-  }
-}
-
-/* Export CSV — no extra endpoint, uses already-fetched data */
-function exportCSV() {
-  const rows = [['Name','Email','Role','Joined']];
-  filteredUsers.forEach(u => {
-    const name   = u.username || u.name || '';
-    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '';
-    rows.push([name, u.email||'', u.role||'', joined]);
-  });
-  const csv = rows.map(r => r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download = `eduflow-users-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showToast('✓',`Exported ${filteredUsers.length} users`,'success');
-}
-
-/* ═══════════════════════════════════════════════
-   COURSES  →  GET /api/admin/courses
-═══════════════════════════════════════════════ */
-let ALL_COURSES = [], filteredCourses = [], coursePage = 1;
-
-async function loadCourses() {
-  document.getElementById('course-tbody').innerHTML =
-    `<tr><td colspan="4"><div class="state-box"><div><span class="spinner"></span></div><p style="margin-top:14px">Fetching courses…</p></div></td></tr>`;
-
-  try {
-    const data = await api('/admin/courses');
-    if (!data.success) throw new Error(data.message || 'API error');
-
-    ALL_COURSES = data.courses || [];
-    document.getElementById('courses-subtitle').textContent =
-      `${ALL_COURSES.length} courses · last synced ${new Date().toLocaleTimeString()}`;
-    filterCourses();
-    showToast('✓', `Loaded ${ALL_COURSES.length} courses`, 'success');
-  } catch(err) {
-    document.getElementById('course-tbody').innerHTML =
-      `<tr><td colspan="4"><div class="state-box"><div class="state-icon">⚠️</div>
-       <p>${esc(err.message)}</p>
-       <br><button class="btn btn-ghost" onclick="loadCourses()" style="margin:12px auto">↻ Retry</button>
-       </div></td></tr>`;
-    showToast('⚠', err.message, 'error');
-  }
-}
-
-function filterCourses() {
-  const q = (document.getElementById('course-search').value || '').toLowerCase();
-  filteredCourses = ALL_COURSES.filter(c => {
-    const title = (c.title || '').toLowerCase();
-    const instr = (c.instructor_id?.username || c.instructor_id?.name || '').toLowerCase();
-    return title.includes(q) || instr.includes(q);
-  });
-  coursePage = 1;
-  renderCourses();
-}
-
-function renderCourses() {
-  const tbody = document.getElementById('course-tbody');
-  const total = filteredCourses.length;
-  const start = (coursePage-1)*PER;
-  const slice = filteredCourses.slice(start, start+PER);
-
-  document.getElementById('course-row-count').textContent = total === 0
-    ? 'No courses found'
-    : `Showing ${start+1}–${Math.min(start+PER,total)} of ${total} courses`;
-
-  if (total === 0) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="state-box">
-      <div class="state-icon">🔍</div><p>No courses found</p>
-    </div></td></tr>`;
-    document.getElementById('course-pagination').innerHTML = '';
-    return;
+        <div class="stat-card c-green">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-label">Students</div>
+          <div class="stat-value">${stats.totalStudents}</div>
+          <div class="stat-delta">${stats.totalUsers - stats.totalStudents} non-students</div>
+        </div>
+        <div class="stat-card c-purple">
+          <div class="stat-icon">🏫</div>
+          <div class="stat-label">Instructors</div>
+          <div class="stat-value">${stats.totalInstructors}</div>
+          <div class="stat-delta">Course creators</div>
+        </div>
+        <div class="stat-card c-amber">
+          <div class="stat-icon">📚</div>
+          <div class="stat-label">Total Courses</div>
+          <div class="stat-value">${stats.totalCourses}</div>
+          <div class="stat-delta">Across all instructors</div>
+        </div>
+      `;
+    } catch (err) {
+      showToast('Failed to load stats: ' + err.message, 'error');
+    }
   }
 
-  tbody.innerHTML = slice.map(c => {
-    const title  = c.title || 'Untitled';
-    const instr  = c.instructor_id?.username || c.instructor_id?.name || '—';
-    const studs  = c.students?.length ?? 0;
-    const date   = c.createdAt
-      ? new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
-      : '—';
-    const thumb  = c.thumbnail
-      ? `<img src="${esc(c.thumbnail)}" style="width:38px;height:38px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.outerHTML='<span style=\\'font-size:1.4rem\\'>📘</span>'" alt=""/>`
-      : `<span style="font-size:1.4rem">📘</span>`;
+  // ─── Users ───────────────────────────────────────────────────────────
+  async function loadUsers() {
+    const tbody = document.getElementById('users-table-body');
+    tbody.innerHTML = '<tr><td colspan="4" class="loading-row"><div class="spinner"></div>Loading users…</td></tr>';
 
-    return `<tr>
-      <td><div class="user-cell">
-        <div class="course-thumb">${thumb}</div>
-        <div><div class="uname">${esc(title)}</div></div>
-      </div></td>
-      <td><span class="mono-sm">${esc(instr)}</span></td>
-      <td><span class="role-badge role-student">👥 ${studs}</span></td>
-      <td><span class="mono-sm">${date}</span></td>
-    </tr>`;
-  }).join('');
+    try {
+      const res = await apiFetch('/api/admin/users');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
 
-  renderPagination('course-pagination', total, coursePage, p => { coursePage=p; renderCourses(); });
-}
+      allUsers = data.users || [];
+      document.getElementById('users-count').textContent = `${allUsers.length} user${allUsers.length !== 1 ? 's' : ''}`;
+      renderUsers();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="4" class="empty-state">❌ ${err.message}</td></tr>`;
+    }
+  }
 
-/* ── Shared pagination ── */
-function renderPagination(elId, total, current, onPage) {
-  const pages = Math.ceil(total/PER);
-  const pg = document.getElementById(elId);
-  if (pages <= 1) { pg.innerHTML=''; return; }
-  let h = `<button class="pg-btn" onclick="(${onPage})(${current-1})" ${current===1?'disabled':''}>‹</button>`;
-  for (let i=1;i<=pages;i++)
-    h += `<button class="pg-btn ${i===current?'active':''}" onclick="(${onPage})(${i})">${i}</button>`;
-  h += `<button class="pg-btn" onclick="(${onPage})(${current+1})" ${current===pages?'disabled':''}>›</button>`;
-  pg.innerHTML = h;
-}
+  function renderUsers() {
+    const tbody = document.getElementById('users-table-body');
+    if (allUsers.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><div class="empty-icon">👥</div>No users found.</td></tr>';
+      return;
+    }
 
-/* ── Toasts ── */
-function showToast(icon, msg, type='') {
-  const area = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = `toast${type?' t-'+type:''}`;
-  t.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
-  area.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
-}
+    tbody.innerHTML = allUsers.map(u => {
+      const badgeClass = u.role === 'admin' ? 'badge-admin' : u.role === 'instructor' ? 'badge-instructor' : 'badge-student';
+      const date = new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const isSelf = u._id === user.id || u._id === user._id;
 
-/* ── Logout ── */
-function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = '/';
-}
+      return `
+        <tr>
+          <td>
+            <div class="cell-user">
+              <div class="cell-avatar">${(u.username || '?').charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="cell-name">${escHtml(u.username || 'Unknown')}</div>
+                <div class="cell-email">${escHtml(u.email)}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge ${badgeClass}">● ${u.role}</span></td>
+          <td>${date}</td>
+          <td>
+            <div class="actions">
+              <button class="action-btn edit" onclick="openEditModal('${u._id}')" ${isSelf ? 'disabled title="Cannot edit yourself"' : ''}>✏️ Edit</button>
+              <button class="action-btn delete" onclick="openDeleteModal('user', '${u._id}', '${escHtml(u.username || 'this user').replace(/'/g, "\\'")}')" ${isSelf ? 'disabled title="Cannot delete yourself"' : ''}>🗑️ Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
 
-/* ── Boot: load stats on dashboard tab ── */
-tabLoaded['dashboard'] = true;
-loadStats();
+  // ─── Courses ─────────────────────────────────────────────────────────
+  async function loadCourses() {
+    const tbody = document.getElementById('courses-table-body');
+    tbody.innerHTML = '<tr><td colspan="5" class="loading-row"><div class="spinner"></div>Loading courses…</td></tr>';
+
+    try {
+      const res = await apiFetch('/api/admin/courses');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      allCourses = data.courses || [];
+      document.getElementById('courses-count').textContent = `${allCourses.length} course${allCourses.length !== 1 ? 's' : ''}`;
+      renderCourses();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">❌ ${err.message}</td></tr>`;
+    }
+  }
+
+  function renderCourses() {
+    const tbody = document.getElementById('courses-table-body');
+    if (allCourses.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon">📚</div>No courses found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = allCourses.map(c => {
+      const date = new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const instructor = c.instructor_id ? (c.instructor_id.username || c.instructor_id.email) : 'Unknown';
+      const students = c.students?.length || 0;
+
+      return `
+        <tr>
+          <td><strong>${escHtml(c.title)}</strong></td>
+          <td>${escHtml(instructor)}</td>
+          <td>${students}</td>
+          <td>${date}</td>
+          <td>
+            <div class="actions">
+              <button class="action-btn delete" onclick="openDeleteModal('course', '${c._id}', '${escHtml(c.title).replace(/'/g, "\\'")}')">🗑️ Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // ─── Lessons ────────────────────────────────────────────────────────
+  async function loadLessons() {
+    const tbody = document.getElementById('lessons-table-body');
+    tbody.innerHTML = '<tr><td colspan="5" class="loading-row"><div class="spinner"></div>Loading lessons…</td></tr>';
+
+    try {
+      const res = await apiFetch('/api/admin/lessons');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      allLessons = data.lessons || [];
+      document.getElementById('lessons-count').textContent = `${allLessons.length} lesson${allLessons.length !== 1 ? 's' : ''}`;
+      renderLessons();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">❌ ${err.message}</td></tr>`;
+    }
+  }
+
+  function renderLessons() {
+    const tbody = document.getElementById('lessons-table-body');
+    if (allLessons.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-icon">📝</div>No lessons found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = allLessons.map(l => {
+      const date = new Date(l.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const courseTitle = l.course_id ? (l.course_id.title || 'Unknown') : 'Unknown';
+
+      return `
+        <tr>
+          <td><strong>${escHtml(l.title)}</strong></td>
+          <td>${escHtml(courseTitle)}</td>
+          <td>${l.order !== undefined ? l.order : '-'}</td>
+          <td>${date}</td>
+          <td>
+            <div class="actions">
+              <button class="action-btn delete" onclick="openDeleteModal('lesson', '${l._id}', '${escHtml(l.title).replace(/'/g, "\\'")}')">🗑️ Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // ─── Delete Modal ───────────────────────────────────────────────────
+  function openDeleteModal(type, id, name) {
+    deleteTarget = { type, id, name };
+    document.getElementById('delete-target-name').textContent = name;
+    document.getElementById('delete-modal').classList.add('open');
+  }
+
+  function closeDeleteModal() {
+    deleteTarget = null;
+    document.getElementById('delete-modal').classList.remove('open');
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.disabled = true;
+    btn.textContent = 'Deleting…';
+
+    try {
+      let endpoint = '';
+      if (deleteTarget.type === 'user') endpoint = `/api/admin/users/${deleteTarget.id}`;
+      else if (deleteTarget.type === 'course') endpoint = `/api/admin/courses/${deleteTarget.id}`;
+      else if (deleteTarget.type === 'lesson') endpoint = `/api/admin/lessons/${deleteTarget.id}`;
+
+      const res = await apiFetch(endpoint, 'DELETE');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      // Remove from local state
+      if (deleteTarget.type === 'user') {
+        allUsers = allUsers.filter(u => u._id !== deleteTarget.id);
+        renderUsers();
+        document.getElementById('users-count').textContent = `${allUsers.length} user${allUsers.length !== 1 ? 's' : ''}`;
+      } else if (deleteTarget.type === 'course') {
+        allCourses = allCourses.filter(c => c._id !== deleteTarget.id);
+        renderCourses();
+        document.getElementById('courses-count').textContent = `${allCourses.length} course${allCourses.length !== 1 ? 's' : ''}`;
+      } else if (deleteTarget.type === 'lesson') {
+        allLessons = allLessons.filter(l => l._id !== deleteTarget.id);
+        renderLessons();
+        document.getElementById('lessons-count').textContent = `${allLessons.length} lesson${allLessons.length !== 1 ? 's' : ''}`;
+      }
+
+      closeDeleteModal();
+      showToast('✅ Deleted successfully', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+      closeDeleteModal();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Delete';
+    }
+  }
+
+  // ─── Edit User Modal ────────────────────────────────────────────────
+  function openEditModal(userId) {
+    const u = allUsers.find(x => x._id === userId);
+    if (!u) return;
+    editTarget = userId;
+    document.getElementById('edit-username').value = u.username || '';
+    document.getElementById('edit-email').value = u.email || '';
+    document.getElementById('edit-role').value = u.role || 'student';
+    document.getElementById('edit-modal').classList.add('open');
+  }
+
+  function closeEditModal() {
+    editTarget = null;
+    document.getElementById('edit-modal').classList.remove('open');
+  }
+
+  async function confirmEdit() {
+    if (!editTarget) return;
+    const btn = document.getElementById('confirm-edit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      const body = {
+        username: document.getElementById('edit-username').value.trim(),
+        email: document.getElementById('edit-email').value.trim(),
+        role: document.getElementById('edit-role').value
+      };
+
+      const res = await apiFetch(`/api/admin/users/${editTarget}`, 'PUT', body);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      const idx = allUsers.findIndex(u => u._id === editTarget);
+      if (idx !== -1) {
+        allUsers[idx] = { ...allUsers[idx], ...data.user };
+      }
+      renderUsers();
+      closeEditModal();
+      showToast('✅ User updated', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+      closeEditModal();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+    }
+  }
+
+  // ─── Helpers ────────────────────────────────────────────────────────
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `show toast-${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/';
+  }
+
+  // Close modals on overlay click
+  document.getElementById('delete-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDeleteModal(); });
+  document.getElementById('edit-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeEditModal(); });
+
+  // ─── Boot ───────────────────────────────────────────────────────────
+  loadStats();
 </script>
+
 </body>
 </html>

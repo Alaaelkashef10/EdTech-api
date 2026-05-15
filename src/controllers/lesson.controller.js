@@ -67,4 +67,82 @@ const createLesson = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, lesson });
 });
 
-module.exports = { getLessons, createLesson };
+
+/**
+ * @desc    Update a lesson
+ * @route   PUT /api/lessons/:lessonId
+ * @access  Private (course owner only)
+ */
+const updateLesson = async (req, res, next) => {
+  try {
+    const lesson = await Lesson.findById(req.params.lessonId);
+
+    if (!lesson) {
+      throw new AppError('Lesson not found', 404);
+    }
+
+    // Fetch the course to verify ownership
+    const course = await Course.findById(lesson.course);
+
+    if (!course) {
+      throw new AppError('Associated course not found', 404);
+    }
+
+    // Ownership check: only the course creator can edit lessons
+    if (!course.instructor_id.equals(req.user._id)) {
+      throw new AppError('Not authorized to update this lesson', 403);
+    }
+
+    const { title, content, videoUrl, order } = req.body;
+
+    if (title !== undefined) lesson.title = title;
+    if (content !== undefined) lesson.content = content;
+    if (videoUrl !== undefined) lesson.videoUrl = videoUrl;
+    if (order !== undefined) lesson.order = order;
+
+    await lesson.save();
+
+    res.json({ success: true, lesson });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * @desc    Delete a lesson
+ * @route   DELETE /api/lessons/:lessonId
+ * @access  Private (course owner only)
+ */
+const deleteLesson = async (req, res, next) => {
+  try {
+    const lesson = await Lesson.findById(req.params.lessonId);
+
+    if (!lesson) {
+      throw new AppError('Lesson not found', 404);
+    }
+
+    // Fetch the course to verify ownership
+    const course = await Course.findById(lesson.course);
+
+    if (!course) {
+      throw new AppError('Associated course not found', 404);
+    }
+
+    // Ownership check: only the course creator can delete lessons
+    if (!course.instructor_id.equals(req.user._id)) {
+      throw new AppError('Not authorized to delete this lesson', 403);
+    }
+
+    await lesson.deleteOne();
+
+    res.json({ success: true, message: 'Lesson deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+module.exports = {
+  getLessons,
+  createLesson,
+  updateLesson,
+  deleteLesson,
+};
