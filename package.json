@@ -8,7 +8,13 @@
     "dev": "nodemon server.js",
     "seed": "node seed.js"
   },
-  "keywords": ["edtech", "api", "nodejs", "express", "mongodb"],
+  "keywords": [
+    "edtech",
+    "api",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

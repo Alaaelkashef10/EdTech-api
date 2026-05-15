@@ -49,9 +49,9 @@ const createCourse = asyncHandler(async (req, res) => {
 });
 
 /**
- * @route   POST /api/courses/:courseId/enroll
- * @access  Private
- * @desc    Enroll the authenticated user in a course
+ * @route POST /api/courses/:courseId/enroll
+ * @access Private (student only)
+ * @desc Enroll the authenticated user in a course
  */
 const enrollCourse = asyncHandler(async (req, res) => {
   const course = await Course.findById(req.params.courseId);
@@ -60,9 +60,9 @@ const enrollCourse = asyncHandler(async (req, res) => {
     throw new AppError('Course not found', 404);
   }
 
-  // Instructors should not enroll in their own courses
-  if (course.instructor_id.toString() === req.user.id) {
-    throw new AppError('Instructors cannot enroll in their own course', 400);
+  // Defense-in-depth: block a student who is also the course owner
+  if (course.instructor_id.equals(req.user._id)) {
+    throw new AppError('You cannot enroll in a course you own', 400);
   }
 
   // Prevent duplicate enrollments
@@ -89,4 +89,63 @@ const getMyCourses = asyncHandler(async (req, res) => {
   res.json({ success: true, count: courses.length, courses });
 });
 
-module.exports = { getCourses, getCourseById, createCourse, enrollCourse, getMyCourses };
+
+/**
+ * @route PUT /api/courses/:courseId
+ * @access Private (instructor who owns the course)
+ * @desc Update a course
+ */
+const updateCourse = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
+
+  if (!course) {
+    throw new AppError('Course not found', 404);
+  }
+
+  // Ownership check: only the creator can modify
+  if (!course.instructor_id.equals(req.user._id)) {
+    throw new AppError('Not authorized to update this course', 403);
+  }
+
+  const { title, description, thumbnail } = req.body;
+
+  if (title !== undefined) course.title = title;
+  if (description !== undefined) course.description = description;
+  if (thumbnail !== undefined) course.thumbnail = thumbnail;
+
+  await course.save();
+
+  res.json({ success: true, course });
+});
+
+/**
+ * @route DELETE /api/courses/:courseId
+ * @access Private (instructor who owns the course)
+ * @desc Delete a course
+ */
+const deleteCourse = asyncHandler(async (req, res) => {
+  const course = await Course.findById(req.params.courseId);
+
+  if (!course) {
+    throw new AppError('Course not found', 404);
+  }
+
+  // Ownership check: only the creator can delete
+  if (!course.instructor_id.equals(req.user._id)) {
+    throw new AppError('Not authorized to delete this course', 403);
+  }
+
+  await course.deleteOne();
+
+  res.json({ success: true, message: 'Course deleted successfully' });
+});
+
+module.exports = {
+  getCourses,
+  getCourseById,
+  createCourse,
+  enrollCourse,
+  getMyCourses,
+  updateCourse,
+  deleteCourse,
+};
