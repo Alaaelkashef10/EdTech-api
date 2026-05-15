@@ -290,7 +290,7 @@ const seedData = async () => {
       return {
         title:         c.title,
         description:   c.desc,
-        thumbnail:     makePhoto(c.photo),   // ← topic-relevant photo URL
+        thumbnail: c.photo,   // ← topic-relevant photo URL
         instructor_id: instructor._id,
         students:      enrolled,
         category:      c.category,
