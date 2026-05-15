@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Courses — EduFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Nav — exact match to your homepage */
+    nav { 
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: rgba(8,12,20,.85); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 0 2rem; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-weight: 700; font-size: 1.3rem; color: #38BDF8; text-decoration: none; font-family: 'Sora', sans-serif; }
+    .logo span { color: #fff; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-link { color: #64748B; text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; font-family: 'DM Sans', sans-serif; }
+    .nav-link:hover, .nav-link.active { color: #F1F5F9; }
+    .nav-user { font-size: .85rem; color: #64748B; font-family: 'DM Sans', sans-serif; }
+    .nav-user strong { color: #F1F5F9; }
+    .btn-ghost-nav { 
+      background: transparent; border: 1px solid rgba(255,255,255,0.07);
+      color: #64748B; padding: .45rem 1.1rem; border-radius: 10px;
+      font-size: .82rem; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .btn-ghost-nav:hover { border-color: #38BDF8; color: #38BDF8; }
+
+    /* Filters bar */
+    .filters-bar {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: .6rem 1rem .6rem 2.5rem;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-box input:focus { border-color: #06b6d4; }
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: .8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: .9rem;
+      opacity: .5;
+    }
+    .sort-select {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: .6rem 1rem;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .sort-select:focus { border-color: #06b6d4; }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .5rem;
+      margin-top: 2rem;
+    }
+    .page-btn {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #6b7280;
+      padding: .5rem .9rem;
+      border-radius: 10px;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .page-btn:hover { border-color: #06b6d4; color: #fff; }
+    .page-btn.active {
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      color: #fff;
+      border-color: transparent;
+      font-weight: 600;
+    }
+    .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Enrolled badge on card */
+    .enrolled-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #34d399;
+      background: rgba(52,211,153,0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(52,211,153,0.2);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 300;
+      background: #0f172a; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 14px 18px;
+      font-size: 13px; color: #fff; font-family: 'DM Sans', sans-serif;
+      transform: translateY(100px); opacity: 0;
+      transition: all .35s; max-width: 320px;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.toast-success { border-color: rgba(52,211,153,.4); }
+    #toast.toast-error { border-color: rgba(239,68,68,.4); }
+  </style>
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+  <!-- Nav — exact match to your homepage -->
+  <nav>
+    <a href="/" class="logo">Edu<span>Flow</span></a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/courses.html" class="nav-link active">Courses</a>
+      <a href="/dashboard.html" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
+      <a href="/student-profile.html" class="nav-link" id="nav-profile" style="display:none">Profile</a>
+      <a href="/login.html" class="nav-link" id="nav-login">Login</a>
+      <a href="/register.html" class="nav-link" id="nav-register">Register</a>
+      <span class="nav-user" id="nav-user-info" style="display:none">Hi, <strong id="nav-username">—</strong></span>
+      <button class="btn-ghost-nav" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <section class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h2 class="text-3xl font-bold font-['Sora']">All Courses</h2>
+        <p class="text-gray-400 mt-1 text-sm font-['DM Sans']">Browse our full catalog</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search courses..." />
+      </div>
+      <select class="sort-select" id="sort-select">
+        <option value="newest">Newest First</option>
+        <option value="popular">Most Popular</option>
+        <option value="az">A-Z</option>
+      </select>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="text-center py-20">
+      <div class="spinner mx-auto mb-4"></div>
+      <p class="text-gray-500 text-sm font-['DM Sans']">Loading courses...</p>
+    </div>
+
+    <!-- Empty -->
+    <div id="empty" class="hidden text-center py-20">
+      <p class="text-gray-500 text-lg font-['DM Sans']">No courses found.</p>
+    </div>
+
+    <!-- Courses Grid — uses YOUR style.css .course-card classes -->
+    <div id="courses-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <div id="toast"></div>
+
+  <script>
+    // ⚠️ PORT 3000 — your server
+    const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+    let allCourses = [];
+    let filteredCourses = [];
+    let currentPage = 1;
+    const perPage = 9;
+
+    function init() {
+      updateNav();
+      loadCourses();
+      initSearch();
+      initSort();
+    }
+
+    function updateNav() {
+      const loginLink = document.getElementById('nav-login');
+      const registerLink = document.getElementById('nav-register');
+      const dashboardLink = document.getElementById('nav-dashboard');
+      const profileLink = document.getElementById('nav-profile');
+      const userInfo = document.getElementById('nav-user-info');
+      const logoutBtn = document.getElementById('nav-logout');
+      const usernameEl = document.getElementById('nav-username');
+
+      if (token && user) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (registerLink) registerLink.style.display = 'none';
+        if (dashboardLink) dashboardLink.style.display = 'inline-block';
+        if (profileLink) profileLink.style.display = 'inline-block';
+        if (userInfo) userInfo.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (usernameEl) usernameEl.textContent = user.username || 'Student';
+      } else {
+        if (loginLink) loginLink.style.display = 'inline-block';
+        if (registerLink) registerLink.style.display = 'inline-block';
+        if (dashboardLink) dashboardLink.style.display = 'none';
+        if (profileLink) profileLink.style.display = 'none';
+        if (userInfo) userInfo.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
+
+    async function loadCourses() {
+      const loading = document.getElementById('loading');
+      const grid = document.getElementById('courses-grid');
+      const empty = document.getElementById('empty');
+
+      loading.classList.remove('hidden');
+      grid.classList.add('hidden');
+      empty.classList.add('hidden');
+
+      try {
+        const res = await fetch(API + '/api/courses');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        allCourses = data.courses || [];
+        filteredCourses = [...allCourses];
+        currentPage = 1;
+
+        applyFilters();
+      } catch (err) {
+        loading.classList.add('hidden');
+        empty.classList.remove('hidden');
+        empty.innerHTML = `<p class="text-red-400 text-center py-12 font-['DM Sans']">${err.message}</p>`;
+      }
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const sort = document.getElementById('sort-select').value;
+
+      filteredCourses = [...allCourses];
+      
+      if (query) {
+        filteredCourses = filteredCourses.filter(c => 
+          c.title.toLowerCase().includes(query) || 
+          c.description.toLowerCase().includes(query)
+        );
+      }
+
+      if (sort === 'newest') {
+        filteredCourses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sort === 'popular') {
+        filteredCourses.sort((a, b) => (b.students?.length || 0) - (a.students?.length || 0));
+      } else if (sort === 'az') {
+        filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      renderPage();
+    }
+
+    function renderPage() {
+      const loading = document.getElementById('loading');
+      const grid = document.getElementById('courses-grid');
+      const empty = document.getElementById('empty');
+      const start = (currentPage - 1) * perPage;
+      const end = start + perPage;
+      const pageCourses = filteredCourses.slice(start, end);
+
+      loading.classList.add('hidden');
+
+      if (filteredCourses.length === 0) {
+        grid.classList.add('hidden');
+        empty.classList.remove('hidden');
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      empty.classList.add('hidden');
+
+      grid.innerHTML = pageCourses.map(c => {
+        const thumb = c.thumbnail || 'https://via.placeholder.com/400x200/0f172a/06b6d4?text=Course';
+        const instructor = c.instructor_id?.username || 'Unknown';
+        const students = c.students?.length || 0;
+        
+        // ✅ FIXED: Proper enrolled check
+        const isEnrolled = user && c.students?.some(s => {
+          const sid = typeof s === 'string' ? s : (s._id || s.id || '').toString();
+          const uid = (user._id || user.id || '').toString();
+          return sid === uid;
+        });
+
+        return `
+          <div class="course-card" onclick="viewCourse('${c._id}')">
+            <img src="${escHtml(thumb)}" alt="${escHtml(c.title)}" 
+                 onerror="this.src='https://via.placeholder.com/400x200/0f172a/06b6d4?text=Course'"/>
+            <div class="course-card-body">
+              <h3 class="course-card-title">${escHtml(c.title)}</h3>
+              <p class="course-card-instructor">by ${escHtml(instructor)}</p>
+              <p class="text-gray-500 text-xs mt-2 line-clamp-2 font-['DM Sans']">${escHtml(c.description)}</p>
+              
+              <div class="course-card-footer">
+                <span class="students-badge">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                  </svg>
+                  ${students} students
+                </span>
+                ${token && user?.role === 'student' 
+                  ? (isEnrolled 
+                    ? '<span class="enrolled-badge">✓ Enrolled</span>' 
+                    : `<button class="free-badge" style="cursor:pointer;background:linear-gradient(135deg,#06b6d4,#0891b2);color:white;border:none;" onclick="event.stopPropagation(); enroll('${c._id}')">Enroll</button>`)
+                  : '<span class="free-badge">Free</span>'
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredCourses.length / perPage);
+      const pagination = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>←</button>`;
+      
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+          html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+          html += `<span style="color:#6b7280;padding:0 .5rem;">…</span>`;
+        }
+      }
+      
+      html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>→</button>`;
+      
+      pagination.innerHTML = html;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.ceil(filteredCourses.length / perPage);
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initSearch() {
+      document.getElementById('search-input').addEventListener('input', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+    }
+
+    function initSort() {
+      document.getElementById('sort-select').addEventListener('change', () => {
+        currentPage = 1;
+        applyFilters();
+      });
+    }
+
+    function viewCourse(id) {
+      window.location.href = `/course.html?id=${id}`;
+    }
+
+    async function enroll(courseId) {
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + `/api/courses/${courseId}/enroll`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.message);
+        
+        showToast('✅ Enrolled successfully!', 'success');
+        loadCourses();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    let toastTimer;
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `show toast-${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
