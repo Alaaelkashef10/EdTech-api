@@ -32,75 +32,75 @@ const pastDate = (days = 120) => new Date(Date.now() - randInt(0, days * 8640000
 // Photos use picsum.photos/seed/<word>/640/360 — stable, free, no API key needed
 
 const COURSES = [
-  // JavaScript / TypeScript (5)
-  { title: 'JavaScript for Beginners',          category: 'javascript', photo: 'javascript',     desc: 'Learn JS from scratch — variables, functions, DOM and ES6+.'             },
-  { title: 'Advanced JavaScript Patterns',      category: 'javascript', photo: 'programming',    desc: 'Master closures, prototypes, design patterns and metaprogramming.'       },
-  { title: 'TypeScript Deep Dive',              category: 'javascript', photo: 'typescript',     desc: 'Static typing, generics, decorators and strict-mode best practices.'     },
-  { title: 'Async JavaScript & Promises',       category: 'javascript', photo: 'network',        desc: 'Callbacks → Promises → async/await with real-world API projects.'        },
-  { title: 'Node.js & Express Fundamentals',    category: 'javascript', photo: 'server',         desc: 'Build RESTful APIs with Node, Express, middleware and JWT auth.'         },
+  // JavaScript / TypeScript
+  { title: 'JavaScript for Beginners', category: 'javascript', photo: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&w=640&q=80', desc: 'Learn JS from scratch — variables, functions, DOM and ES6+.' },
+  { title: 'Advanced JavaScript Patterns', category: 'javascript', photo: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=640&q=80', desc: 'Master closures, prototypes, design patterns and metaprogramming.' },
+  { title: 'TypeScript Deep Dive', category: 'javascript', photo: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=640&q=80', desc: 'Static typing, generics, decorators and strict-mode best practices.' },
+  { title: 'Async JavaScript & Promises', category: 'javascript', photo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80', desc: 'Callbacks → Promises → async/await with real-world API projects.' },
+  { title: 'Node.js & Express Fundamentals', category: 'javascript', photo: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&w=640&q=80', desc: 'Build RESTful APIs with Node, Express, middleware and JWT auth.' },
 
-  // React / Frontend (5)
-  { title: 'React for Beginners',               category: 'react',      photo: 'frontend',       desc: 'JSX, props, state, hooks and your first SPA from scratch.'               },
-  { title: 'React Hooks in Depth',              category: 'react',      photo: 'component',      desc: 'useState, useEffect, useReducer, useRef and custom hooks.'               },
-  { title: 'Next.js Full-Stack Apps',           category: 'react',      photo: 'webapp',         desc: 'SSR, SSG, API routes, authentication and deployment on Vercel.'          },
-  { title: 'Redux Toolkit Masterclass',         category: 'react',      photo: 'state',          desc: 'Global state management with slices, thunks and RTK Query.'              },
-  { title: 'React Performance Optimization',    category: 'react',      photo: 'performance',    desc: 'Memoization, lazy loading, code splitting and profiling tools.'          },
+  // React / Frontend
+  { title: 'React for Beginners', category: 'react', photo: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=640&q=80', desc: 'JSX, props, state, hooks and your first SPA from scratch.' },
+  { title: 'React Hooks in Depth', category: 'react', photo: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=640&q=80', desc: 'useState, useEffect, useReducer, useRef and custom hooks.' },
+  { title: 'Next.js Full-Stack Apps', category: 'react', photo: 'https://images.unsplash.com/photo-1618477247222-acbdb0e159b3?auto=format&fit=crop&w=640&q=80', desc: 'SSR, SSG, API routes, authentication and deployment on Vercel.' },
+  { title: 'Redux Toolkit Masterclass', category: 'react', photo: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=640&q=80', desc: 'Global state management with slices, thunks and RTK Query.' },
+  { title: 'React Performance Optimization', category: 'react', photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=80', desc: 'Memoization, lazy loading, code splitting and profiling tools.' },
 
-  // CSS / UI (5)
-  { title: 'Modern CSS Layouts',                category: 'css',        photo: 'design',         desc: 'Flexbox, Grid, container queries and modern layout techniques.'          },
-  { title: 'Tailwind CSS from Scratch',         category: 'css',        photo: 'interface',      desc: 'Utility-first CSS, responsive design and component patterns.'            },
-  { title: 'CSS Animations & Transitions',      category: 'css',        photo: 'motion',         desc: 'Keyframes, timing functions, scroll-driven animations and GSAP.'        },
-  { title: 'UI/UX Fundamentals',                category: 'css',        photo: 'ux',             desc: 'Wireframing, design principles, accessibility and prototyping.'          },
-  { title: 'Figma to Code',                     category: 'css',        photo: 'figma',          desc: 'Turn Figma designs into pixel-perfect HTML/CSS components.'              },
+  // CSS / UI
+  { title: 'Modern CSS Layouts', category: 'css', photo: 'https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?auto=format&fit=crop&w=640&q=80', desc: 'Flexbox, Grid, container queries and modern layout techniques.' },
+  { title: 'Tailwind CSS from Scratch', category: 'css', photo: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&w=640&q=80', desc: 'Utility-first CSS, responsive design and component patterns.' },
+  { title: 'CSS Animations & Transitions', category: 'css', photo: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=640&q=80', desc: 'Keyframes, timing functions, scroll-driven animations and GSAP.' },
+  { title: 'UI/UX Fundamentals', category: 'css', photo: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&w=640&q=80', desc: 'Wireframing, design principles, accessibility and prototyping.' },
+  { title: 'Figma to Code', category: 'css', photo: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=640&q=80', desc: 'Turn Figma designs into pixel-perfect HTML/CSS components.' },
 
-  // Python (5)
-  { title: 'Python for Absolute Beginners',     category: 'python',     photo: 'python',         desc: 'Syntax, data types, loops, functions and your first programs.'           },
-  { title: 'Python Data Structures & Algos',    category: 'python',     photo: 'algorithm',      desc: 'Arrays, trees, graphs, sorting and Big-O complexity.'                   },
-  { title: 'Automate the Boring Stuff',         category: 'python',     photo: 'automation',     desc: 'File handling, web scraping, email automation and scheduling.'           },
-  { title: 'Django REST Framework',             category: 'python',     photo: 'django',         desc: 'Build production-ready REST APIs with Django and DRF.'                  },
-  { title: 'Python for Data Science',           category: 'python',     photo: 'datascience',    desc: 'Pandas, NumPy, Matplotlib and exploratory data analysis.'                },
+  // Python
+  { title: 'Python for Absolute Beginners', category: 'python', photo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=640&q=80', desc: 'Syntax, data types, loops, functions and your first programs.' },
+  { title: 'Python Data Structures & Algos', category: 'python', photo: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=640&q=80', desc: 'Arrays, trees, graphs, sorting and Big-O complexity.' },
+  { title: 'Automate the Boring Stuff', category: 'python', photo: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=640&q=80', desc: 'File handling, web scraping, email automation and scheduling.' },
+  { title: 'Django REST Framework', category: 'python', photo: 'https://images.unsplash.com/photo-1536148935079-bd25580e45b4?auto=format&fit=crop&w=640&q=80', desc: 'Build production-ready REST APIs with Django and DRF.' },
+  { title: 'Python for Data Science', category: 'python', photo: 'https://images.unsplash.com/photo-1551288049-bbbda5366392?auto=format&fit=crop&w=640&q=80', desc: 'Pandas, NumPy, Matplotlib and exploratory data analysis.' },
 
-  // Machine Learning / AI (5)
-  { title: 'Machine Learning Foundations',      category: 'ml',         photo: 'machinelearning',desc: 'Supervised & unsupervised learning, evaluation and feature engineering.' },
-  { title: 'Deep Learning with PyTorch',        category: 'ml',         photo: 'neural',         desc: 'Neural networks, CNNs, RNNs and model training from scratch.'            },
-  { title: 'Natural Language Processing',       category: 'ml',         photo: 'language',       desc: 'Tokenisation, embeddings, transformers and LLM fine-tuning.'             },
-  { title: 'Computer Vision Fundamentals',      category: 'ml',         photo: 'vision',         desc: 'Image classification, object detection and OpenCV.'                      },
-  { title: 'Generative AI & LLMs',              category: 'ml',         photo: 'artificial',     desc: 'Prompt engineering, RAG, agents and deploying LLM-powered apps.'        },
+  // Machine Learning / AI
+  { title: 'Machine Learning Foundations', category: 'ml', photo: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=640&q=80', desc: 'Supervised & unsupervised learning, evaluation and feature engineering.' },
+  { title: 'Deep Learning with PyTorch', category: 'ml', photo: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=640&q=80', desc: 'Neural networks, CNNs, RNNs and model training from scratch.' },
+  { title: 'Natural Language Processing', category: 'ml', photo: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=640&q=80', desc: 'Tokenisation, embeddings, transformers and LLM fine-tuning.' },
+  { title: 'Computer Vision Fundamentals', category: 'ml', photo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80', desc: 'Image classification, object detection and OpenCV.' },
+  { title: 'Generative AI & LLMs', category: 'ml', photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=640&q=80', desc: 'Prompt engineering, RAG, agents and deploying LLM-powered apps.' },
 
-  // Databases (5)
-  { title: 'SQL for Beginners',                 category: 'database',   photo: 'database',       desc: 'SELECT, JOINs, aggregation, indexes and schema design.'                  },
-  { title: 'Advanced PostgreSQL',               category: 'database',   photo: 'postgres',       desc: 'Window functions, CTEs, partitioning and performance tuning.'            },
-  { title: 'MongoDB & NoSQL Design',            category: 'database',   photo: 'mongodb',        desc: 'Documents, aggregation pipeline, indexes and Atlas search.'             },
-  { title: 'Redis Caching Strategies',          category: 'database',   photo: 'cache',          desc: 'Data structures, pub/sub, sessions and rate limiting with Redis.'       },
-  { title: 'GraphQL API Design',                category: 'database',   photo: 'graphql',        desc: 'Schemas, resolvers, subscriptions and Apollo Server.'                    },
+  // Databases
+  { title: 'SQL for Beginners', category: 'database', photo: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=640&q=80', desc: 'SELECT, JOINs, aggregation, indexes and schema design.' },
+  { title: 'Advanced PostgreSQL', category: 'database', photo: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&w=640&q=80', desc: 'Window functions, CTEs, partitioning and performance tuning.' },
+  { title: 'MongoDB & NoSQL Design', category: 'database', photo: 'https://images.unsplash.com/photo-1560732488-6b0df240254a?auto=format&fit=crop&w=640&q=80', desc: 'Documents, aggregation pipeline, indexes and Atlas search.' },
+  { title: 'Redis Caching Strategies', category: 'database', photo: 'https://images.unsplash.com/photo-1551288049-bbbda5366392?auto=format&fit=crop&w=640&q=80', desc: 'Data structures, pub/sub, sessions and rate limiting with Redis.' },
+  { title: 'GraphQL API Design', category: 'database', photo: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=640&q=80', desc: 'Schemas, resolvers, subscriptions and Apollo Server.' },
 
-  // DevOps / Cloud (5)
-  { title: 'Docker for Developers',             category: 'devops',     photo: 'docker',         desc: 'Images, containers, Compose, networking and multi-stage builds.'        },
-  { title: 'Kubernetes in Production',          category: 'devops',     photo: 'kubernetes',     desc: 'Pods, deployments, services, Helm charts and cluster management.'       },
-  { title: 'CI/CD with GitHub Actions',         category: 'devops',     photo: 'pipeline',       desc: 'Automate build, test, lint and deploy with reusable workflows.'         },
-  { title: 'AWS Cloud Practitioner',            category: 'devops',     photo: 'cloud',          desc: 'Core AWS services, IAM, S3, EC2, Lambda and billing.'                   },
-  { title: 'Linux for Developers',              category: 'devops',     photo: 'linux',          desc: 'Shell scripting, file system, permissions and process management.'      },
+  // DevOps / Cloud
+  { title: 'Docker for Developers', category: 'devops', photo: 'https://images.unsplash.com/photo-1605745341112-85968b193ef5?auto=format&fit=crop&w=640&q=80', desc: 'Images, containers, Compose, networking and multi-stage builds.' },
+  { title: 'Kubernetes in Production', category: 'devops', photo: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?auto=format&fit=crop&w=640&q=80', desc: 'Pods, deployments, services, Helm charts and cluster management.' },
+  { title: 'CI/CD with GitHub Actions', category: 'devops', photo: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=640&q=80', desc: 'Automate build, test, lint and deploy with reusable workflows.' },
+  { title: 'AWS Cloud Practitioner', category: 'devops', photo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=640&q=80', desc: 'Core AWS services, IAM, S3, EC2, Lambda and billing.' },
+  { title: 'Linux for Developers', category: 'devops', photo: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=640&q=80', desc: 'Shell scripting, file system, permissions and process management.' },
 
-  // Cyber Security (5)
-  { title: 'Ethical Hacking Fundamentals',      category: 'security',   photo: 'hacking',        desc: 'Recon, scanning, exploitation and responsible disclosure.'               },
-  { title: 'Web Application Security',          category: 'security',   photo: 'security',       desc: 'SQLi, XSS, CSRF, broken auth and OWASP Top 10 mitigations.'            },
-  { title: 'Cryptography for Developers',       category: 'security',   photo: 'cryptography',   desc: 'Hashing, symmetric/asymmetric encryption, TLS and JWTs.'               },
-  { title: 'Network Security Essentials',       category: 'security',   photo: 'firewall',       desc: 'Firewalls, VPNs, IDS/IPS, Wireshark and network hardening.'             },
-  { title: 'Bug Bounty Hunting',                category: 'security',   photo: 'vulnerability',  desc: 'Recon techniques, report writing and real-world bug bounty platforms.'  },
+  // Cyber Security
+  { title: 'Ethical Hacking Fundamentals', category: 'security', photo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=640&q=80', desc: 'Recon, scanning, exploitation and responsible disclosure.' },
+  { title: 'Web Application Security', category: 'security', photo: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=640&q=80', desc: 'SQLi, XSS, CSRF, broken auth and OWASP Top 10 mitigations.' },
+  { title: 'Cryptography for Developers', category: 'security', photo: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=640&q=80', desc: 'Hashing, symmetric/asymmetric encryption, TLS and JWTs.' },
+  { title: 'Network Security Essentials', category: 'security', photo: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&w=640&q=80', desc: 'Firewalls, VPNs, IDS/IPS, Wireshark and network hardening.' },
+  { title: 'Bug Bounty Hunting', category: 'security', photo: 'https://images.unsplash.com/photo-1526374876133-9d7956a2f30c?auto=format&fit=crop&w=640&q=80', desc: 'Recon techniques, report writing and real-world bug bounty platforms.' },
 
-  // Mobile (5)
-  { title: 'Flutter from Scratch',              category: 'mobile',     photo: 'flutter',        desc: 'Widgets, state management, navigation and publishing to stores.'        },
-  { title: 'Swift & iOS Development',           category: 'mobile',     photo: 'ios',            desc: 'SwiftUI, navigation, data persistence and App Store submission.'        },
-  { title: 'Android with Kotlin',               category: 'mobile',     photo: 'android',        desc: 'Jetpack Compose, ViewModel, Room and Google Play publishing.'           },
-  { title: 'React Native Mobile Dev',           category: 'mobile',     photo: 'reactnative',    desc: 'Cross-platform apps with Expo, navigation and native modules.'          },
-  { title: 'Mobile UI/UX Design',               category: 'mobile',     photo: 'mobiledesign',   desc: 'Human Interface Guidelines, Material Design and accessibility.'         },
+  // Mobile
+  { title: 'Flutter from Scratch', category: 'mobile', photo: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=640&q=80', desc: 'Widgets, state management, navigation and publishing to stores.' },
+  { title: 'Swift & iOS Development', category: 'mobile', photo: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=640&q=80', desc: 'SwiftUI, navigation, data persistence and App Store submission.' },
+  { title: 'Android with Kotlin', category: 'mobile', photo: 'https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?auto=format&fit=crop&w=640&q=80', desc: 'Jetpack Compose, ViewModel, Room and Google Play publishing.' },
+  { title: 'React Native Mobile Dev', category: 'mobile', photo: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=640&q=80', desc: 'Cross-platform apps with Expo, navigation and native modules.' },
+  { title: 'Mobile UI/UX Design', category: 'mobile', photo: 'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=640&q=80', desc: 'Human Interface Guidelines, Material Design and accessibility.' },
 
-  // Career (5)
-  { title: 'Technical Interview Prep',          category: 'career',     photo: 'interview',      desc: 'LeetCode patterns, system design questions and mock interviews.'        },
-  { title: 'System Design Interviews',          category: 'career',     photo: 'systemdesign',   desc: 'Scalability, caching, databases, load balancers and real examples.'     },
-  { title: 'Git & GitHub Mastery',              category: 'career',     photo: 'git',            desc: 'Branching, rebasing, PRs, Actions and open-source workflows.'           },
-  { title: 'Building a Dev Portfolio',          category: 'career',     photo: 'portfolio',      desc: 'Projects, GitHub profile, personal site and LinkedIn optimisation.'     },
-  { title: 'Freelancing as a Developer',        category: 'career',     photo: 'freelance',      desc: 'Finding clients, writing proposals, pricing and managing projects.'     },
+  // Career
+  { title: 'Technical Interview Prep', category: 'career', photo: 'https://images.unsplash.com/photo-1521791136064-7986c2923216?auto=format&fit=crop&w=640&q=80', desc: 'LeetCode patterns, system design questions and mock interviews.' },
+  { title: 'System Design Interviews', category: 'career', photo: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=640&q=80', desc: 'Scalability, caching, databases, load balancers and real examples.' },
+  { title: 'Git & GitHub Mastery', category: 'career', photo: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=640&q=80', desc: 'Branching, rebasing, PRs, Actions and open-source workflows.' },
+  { title: 'Building a Dev Portfolio', category: 'career', photo: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=640&q=80', desc: 'Projects, GitHub profile, personal site and LinkedIn optimisation.' },
+  { title: 'Freelancing as a Developer', category: 'career', photo: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=640&q=80', desc: 'Finding clients, writing proposals, pricing and managing projects.' },
 ];
 
 // ─── Lesson templates per category (6 lessons each) ──────────────────────────
