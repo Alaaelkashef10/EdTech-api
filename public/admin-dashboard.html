@@ -47,6 +47,10 @@
   .user-meta strong { display:block; font-size:12.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .user-meta span   { font-size:11px; color:var(--muted); }
 
+  /* Tab views */
+  .tab-view { display:none; }
+  .tab-view.active { display:block; }
+
   /* Main */
   .main { flex:1; padding:32px 36px; overflow-x:hidden; }
   .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:32px; }
@@ -114,15 +118,11 @@
   .role-admin      { background:rgba(56,189,248,.12); color:var(--accent); }
   .role-instructor { background:rgba(167,139,250,.12); color:var(--purple); }
   .role-student    { background:rgba(255,255,255,.06); color:var(--muted); }
-  .status-cell { display:flex; align-items:center; gap:7px; font-size:13px; }
-  .status-dot  { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-  .dot-active   { background:var(--green); box-shadow:0 0 0 3px rgba(52,211,153,.2); }
-  .dot-inactive { background:var(--muted); }
   .mono-sm { font-family:var(--mono); font-size:12px; color:var(--muted); }
+  /* only delete action remains */
   .action-menu { display:flex; gap:4px; justify-content:flex-end; opacity:.4; transition:opacity .15s; }
   tbody tr:hover .action-menu { opacity:1; }
   .icon-btn { width:28px; height:28px; border-radius:7px; background:none; border:1px solid var(--border); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .12s; font-family:var(--font); }
-  .icon-btn:hover { background:var(--surface2); color:var(--text); border-color:var(--border2); }
   .icon-btn.danger:hover { background:rgba(248,113,113,.1); color:var(--red); border-color:rgba(248,113,113,.3); }
   .table-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-top:1px solid var(--border); font-size:12.5px; color:var(--muted); flex-wrap:wrap; gap:10px; }
   .pagination { display:flex; gap:4px; }
@@ -130,6 +130,10 @@
   .pg-btn:hover { border-color:var(--border2); color:var(--text); }
   .pg-btn.active { background:var(--accent); border-color:var(--accent); color:#0a1a2e; font-weight:600; }
   .pg-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+  /* Courses table extras */
+  .course-thumb { width:38px; height:38px; border-radius:8px; object-fit:cover; background:var(--surface2); border:1px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+  .course-thumb img { width:100%; height:100%; border-radius:8px; object-fit:cover; }
 
   /* State boxes */
   .state-box { text-align:center; padding:52px 20px; color:var(--muted); }
@@ -143,10 +147,10 @@
 
   /* Toasts */
   .toast-area { position:fixed; bottom:24px; right:24px; display:flex; flex-direction:column; gap:8px; z-index:100; }
-  .toast { background:var(--surface); border:1px solid var(--border2); border-radius:10px; padding:12px 16px; font-size:13px; display:flex; align-items:center; gap:10px; animation:slideIn .25s ease; max-width:300px; }
+  .toast { background:var(--surface); border:1px solid var(--border2); border-radius:10px; padding:12px 16px; font-size:13px; display:flex; align-items:center; gap:10px; animation:toastIn .25s ease; max-width:300px; }
   .toast.t-error   { border-color:rgba(248,113,113,.4); }
   .toast.t-success { border-color:rgba(52,211,153,.3); }
-  @keyframes slideIn { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+  @keyframes toastIn { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
 
   ::-webkit-scrollbar { width:6px; }
   ::-webkit-scrollbar-track { background:transparent; }
@@ -162,7 +166,6 @@
 </head>
 <body>
 
-<!-- ═══════ CONFIG (same logic as your config.js) ═══════ -->
 <script>
   window.API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
     ? 'http://127.0.0.1:3000/api' : '/api';
@@ -170,7 +173,7 @@
 
 <div class="shell">
 
-  <!-- Sidebar -->
+  <!-- ═══ SIDEBAR — only links with real endpoints ═══ -->
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-mark">E</div>
@@ -179,26 +182,31 @@
         <div class="logo-sub">Admin</div>
       </div>
     </div>
+
     <div class="nav-group">
       <div class="nav-label">Overview</div>
-      <a class="nav-item active" href="#">
+      <!-- GET /api/admin/stats -->
+      <a class="nav-item active" id="nav-dashboard" href="#" onclick="switchTab('dashboard',this)">
         <span class="nav-icon">⊞</span> Dashboard
         <span class="nav-badge" id="live-badge">Live</span>
       </a>
-      <a class="nav-item" href="#"><span class="nav-icon">👥</span> Users</a>
-      <a class="nav-item" href="#"><span class="nav-icon">📚</span> Courses</a>
-      <a class="nav-item" href="#"><span class="nav-icon">📊</span> Analytics</a>
+      <!-- GET /api/admin/users -->
+      <a class="nav-item" id="nav-users" href="#" onclick="switchTab('users',this)">
+        <span class="nav-icon">👥</span> Users
+      </a>
+      <!-- GET /api/admin/courses -->
+      <a class="nav-item" id="nav-courses" href="#" onclick="switchTab('courses',this)">
+        <span class="nav-icon">📚</span> Courses
+      </a>
     </div>
-    <div class="nav-group">
-      <div class="nav-label">Manage</div>
-      <a class="nav-item" href="#"><span class="nav-icon">💳</span> Payments</a>
-      <a class="nav-item" href="#"><span class="nav-icon">🔔</span> Notifications</a>
-    </div>
+
     <div class="nav-group">
       <div class="nav-label">System</div>
-      <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Settings</a>
-      <a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a>
+      <a class="nav-item" href="#" onclick="logout()">
+        <span class="nav-icon">🚪</span> Logout
+      </a>
     </div>
+
     <div class="sidebar-footer">
       <div class="avatar-sm" id="sb-avatar">—</div>
       <div class="user-meta">
@@ -208,106 +216,174 @@
     </div>
   </aside>
 
-  <!-- Main -->
+  <!-- ═══ MAIN ═══ -->
   <main class="main">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Dashboard</div>
-        <div class="page-subtitle" id="page-subtitle">Connecting to database…</div>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-ghost" id="refresh-btn" onclick="reload()">↻ Refresh</button>
-        <button class="btn btn-ghost" id="export-btn" onclick="exportCSV()" disabled>↓ Export CSV</button>
-      </div>
-    </div>
 
-    <!-- Stat cards -->
-    <div class="stats-grid">
-      <div class="stat-card c-blue">
-        <div class="stat-icon">👥</div>
-        <div class="stat-label">Total users</div>
-        <div class="skeleton skel-val" id="sk-users"></div>
-        <div class="stat-value" id="total-users" style="display:none">—</div>
-        <div class="stat-delta" id="d-users"></div>
-      </div>
-      <div class="stat-card c-green">
-        <div class="stat-icon">🎓</div>
-        <div class="stat-label">Students</div>
-        <div class="skeleton skel-val" id="sk-students"></div>
-        <div class="stat-value" id="total-students" style="display:none">—</div>
-        <div class="stat-delta" id="d-students"></div>
-      </div>
-      <div class="stat-card c-purple">
-        <div class="stat-icon">🏫</div>
-        <div class="stat-label">Instructors</div>
-        <div class="skeleton skel-val" id="sk-instructors"></div>
-        <div class="stat-value" id="total-instructors" style="display:none">—</div>
-        <div class="stat-delta" id="d-instructors"></div>
-      </div>
-      <div class="stat-card c-amber">
-        <div class="stat-icon">🛡️</div>
-        <div class="stat-label">Admins</div>
-        <div class="skeleton skel-val" id="sk-admins"></div>
-        <div class="stat-value" id="total-admins" style="display:none">—</div>
-        <div class="stat-delta" id="d-admins"></div>
-      </div>
-    </div>
-
-    <!-- Users table -->
-    <div class="table-section">
-      <div class="table-toolbar">
-        <h2>All users</h2>
-        <div class="toolbar-right">
-          <div class="search-box">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input type="text" id="search" placeholder="Search name or email…" oninput="filterTable()" />
-          </div>
-          <div class="filters">
-            <button class="filter-pill active" onclick="setRole(this,'all')">All</button>
-            <button class="filter-pill" onclick="setRole(this,'admin')">Admin</button>
-            <button class="filter-pill" onclick="setRole(this,'instructor')">Instructor</button>
-            <button class="filter-pill" onclick="setRole(this,'student')">Student</button>
-          </div>
+    <!-- ══ TAB: DASHBOARD (stats) ══ -->
+    <div class="tab-view active" id="tab-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle" id="page-subtitle">Connecting to database…</div>
+        </div>
+        <div class="header-actions">
+          <!-- GET /api/admin/stats -->
+          <button class="btn btn-ghost" id="refresh-btn" onclick="loadStats()">↻ Refresh</button>
         </div>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th style="width:33%">User</th>
-            <th style="width:14%">Role</th>
-            <th style="width:14%">Status</th>
-            <th style="width:20%">Joined</th>
-            <th style="width:12%;text-align:right">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="user-tbody">
-          <tr>
-            <td colspan="5">
-              <div class="state-box">
-                <div><span class="spinner"></span></div>
-                <p style="margin-top:14px">Fetching users from database…</p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="table-footer">
-        <span id="row-count">—</span>
-        <div class="pagination" id="pagination"></div>
+      <!-- Stats from GET /api/admin/stats -->
+      <div class="stats-grid">
+        <div class="stat-card c-blue">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Users</div>
+          <div class="skeleton skel-val" id="sk-users"></div>
+          <div class="stat-value" id="total-users" style="display:none">—</div>
+          <div class="stat-delta" id="d-users"></div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-label">Students</div>
+          <div class="skeleton skel-val" id="sk-students"></div>
+          <div class="stat-value" id="total-students" style="display:none">—</div>
+          <div class="stat-delta" id="d-students"></div>
+        </div>
+        <div class="stat-card c-purple">
+          <div class="stat-icon">🏫</div>
+          <div class="stat-label">Instructors</div>
+          <div class="skeleton skel-val" id="sk-instructors"></div>
+          <div class="stat-value" id="total-instructors" style="display:none">—</div>
+          <div class="stat-delta" id="d-instructors"></div>
+        </div>
+        <div class="stat-card c-amber">
+          <div class="stat-icon">📚</div>
+          <div class="stat-label">Total Courses</div>
+          <div class="skeleton skel-val" id="sk-courses-stat"></div>
+          <div class="stat-value" id="total-courses-stat" style="display:none">—</div>
+          <div class="stat-delta" id="d-courses"></div>
+        </div>
       </div>
     </div>
+
+    <!-- ══ TAB: USERS ══ -->
+    <div class="tab-view" id="tab-users">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Users</div>
+          <div class="page-subtitle" id="users-subtitle">Loading…</div>
+        </div>
+        <div class="header-actions">
+          <!-- triggers GET /api/admin/users -->
+          <button class="btn btn-ghost" onclick="loadUsers()">↻ Refresh</button>
+          <!-- Export works on already-fetched data, no extra endpoint needed -->
+          <button class="btn btn-ghost" id="export-btn" onclick="exportCSV()" disabled>↓ Export CSV</button>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h2>All Users</h2>
+          <div class="toolbar-right">
+            <div class="search-box">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" id="search" placeholder="Search name or email…" oninput="filterUsers()"/>
+            </div>
+            <div class="filters">
+              <button class="filter-pill active" onclick="setRole(this,'all')">All</button>
+              <button class="filter-pill" onclick="setRole(this,'admin')">Admin</button>
+              <button class="filter-pill" onclick="setRole(this,'instructor')">Instructor</button>
+              <button class="filter-pill" onclick="setRole(this,'student')">Student</button>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:35%">User</th>
+              <th style="width:15%">Role</th>
+              <th style="width:20%">Joined</th>
+              <th style="width:10%;text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="user-tbody">
+            <tr><td colspan="4">
+              <div class="state-box">
+                <div><span class="spinner"></span></div>
+                <p style="margin-top:14px">Fetching users…</p>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span id="row-count">—</span>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: COURSES ══ -->
+    <div class="tab-view" id="tab-courses">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Courses</div>
+          <div class="page-subtitle" id="courses-subtitle">Loading…</div>
+        </div>
+        <div class="header-actions">
+          <!-- triggers GET /api/admin/courses -->
+          <button class="btn btn-ghost" onclick="loadCourses()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h2>All Courses</h2>
+          <div class="toolbar-right">
+            <div class="search-box">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" id="course-search" placeholder="Search title or instructor…" oninput="filterCourses()"/>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40%">Course</th>
+              <th style="width:25%">Instructor</th>
+              <th style="width:15%">Students</th>
+              <th style="width:20%">Created</th>
+            </tr>
+          </thead>
+          <tbody id="course-tbody">
+            <tr><td colspan="4">
+              <div class="state-box">
+                <div><span class="spinner"></span></div>
+                <p style="margin-top:14px">Fetching courses…</p>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span id="course-row-count">—</span>
+          <div class="pagination" id="course-pagination"></div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
 <div class="toast-area" id="toasts"></div>
 
-<!-- ═══════════════════════════ SCRIPT ═══════════════════════════ -->
 <script>
-/* ── Auth guard (mirrors your admin.js logic) ── */
+/* ── Auth guard ── */
 const token = localStorage.getItem('token');
 const user  = JSON.parse(localStorage.getItem('user') || 'null');
 
@@ -316,265 +392,337 @@ if (!token || !user || user.role !== 'admin') {
   setTimeout(() => { window.location.href = '/'; }, 1500);
 }
 
-/* ── Sidebar: show logged-in user ── */
-const initials = n => (n || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+/* ── Sidebar user ── */
+const initials = n => (n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
 document.getElementById('sb-avatar').textContent = initials(user?.username || user?.name || '');
 document.getElementById('sb-name').textContent   = user?.username || user?.name || 'Admin';
 document.getElementById('sb-role').textContent   = user?.role || '';
 
-/* ── State ── */
-let ALL_USERS = [], filtered = [], roleFilter = 'all', page = 1;
-const PER     = 10;
-const COLORS  = ['av-blue','av-green','av-purple','av-amber','av-red','av-teal'];
-const colorFor = name => COLORS[(name || '').charCodeAt(0) % COLORS.length];
+/* ── Helpers ── */
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cap = s => s ? s.charAt(0).toUpperCase()+s.slice(1) : '';
+const COLORS = ['av-blue','av-green','av-purple','av-amber','av-red','av-teal'];
+const colorFor = name => COLORS[(name||'').charCodeAt(0) % COLORS.length];
 
-/* ─────────────────────────────────────────────────────────
-   FETCH — calls your real GET /api/admin/users endpoint
-───────────────────────────────────────────────────────── */
-async function loadDashboard() {
+/* ── Auth fetch wrapper ── */
+async function api(path, method = 'GET') {
+  const res = await fetch(`${window.API_BASE}${path}`, {
+    method,
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (res.status === 401 || res.status === 403) {
+    showToast('🔒', 'Session expired — please log in again.', 'error');
+    setTimeout(() => { window.location.href = '/'; }, 2000);
+    throw new Error('Unauthorized');
+  }
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+/* ═══════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════ */
+const TABS = ['dashboard','users','courses'];
+let tabLoaded = {};
+
+function switchTab(name, el) {
+  // update nav active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+
+  // show correct view
+  TABS.forEach(t => document.getElementById(`tab-${t}`).classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+
+  // lazy-load data once per tab
+  if (!tabLoaded[name]) {
+    tabLoaded[name] = true;
+    if (name === 'users')   loadUsers();
+    if (name === 'courses') loadCourses();
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD STATS  →  GET /api/admin/stats
+═══════════════════════════════════════════════ */
+async function loadStats() {
   setRefreshing(true);
   try {
-    const res = await fetch(`${window.API_BASE}/admin/users`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const data = await api('/admin/stats');
+    if (!data.success) throw new Error(data.message || 'API error');
 
-    /* Session expired or forbidden */
-    if (res.status === 401 || res.status === 403) {
-      showToast('🔒', 'Session expired — please log in again.', 'error');
-      setTimeout(() => { window.location.href = '/'; }, 2000);
-      return;
-    }
+    const s = data.stats || data;  // support {stats:{...}} or flat
+    document.getElementById('total-users').textContent        = s.totalUsers       ?? '—';
+    document.getElementById('total-students').textContent     = s.totalStudents    ?? '—';
+    document.getElementById('total-instructors').textContent  = s.totalInstructors ?? '—';
+    document.getElementById('total-courses-stat').textContent = s.totalCourses     ?? '—';
 
-    if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+    // delta hints
+    const tot = s.totalUsers || 1;
+    document.getElementById('d-users').textContent        = `${s.totalStudents??0} students · ${s.totalInstructors??0} instructors`;
+    document.getElementById('d-students').textContent     = tot ? Math.round((s.totalStudents||0)/tot*100)+'% of users' : '';
+    document.getElementById('d-instructors').textContent  = tot ? Math.round((s.totalInstructors||0)/tot*100)+'% of users' : '';
+    document.getElementById('d-courses').textContent      = `${s.totalCourses??0} published courses`;
 
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message || 'API returned success: false');
-
-    ALL_USERS = data.users || [];
-    fillStats(ALL_USERS);
-    filterTable();
     revealStats();
-
-    document.getElementById('export-btn').disabled = false;
     document.getElementById('page-subtitle').textContent =
-      `${ALL_USERS.length} users · last synced ${new Date().toLocaleTimeString()}`;
-    showToast('✓', `Loaded ${ALL_USERS.length} users`, 'success');
-
-  } catch (err) {
-    console.error('[EduFlow Admin]', err);
-    showTableError(err.message);
-    document.getElementById('page-subtitle').textContent = 'Could not reach database';
+      `Last synced ${new Date().toLocaleTimeString()}`;
+    showToast('✓', 'Stats refreshed', 'success');
+  } catch(err) {
+    console.error(err);
+    document.getElementById('page-subtitle').textContent = 'Could not load stats';
     showToast('⚠', err.message, 'error');
   } finally {
     setRefreshing(false);
   }
 }
 
-/* ─────────────────────────────────────────────────────────
-   STATS — derived from the users array
-   (add a /api/admin/stats call here if your backend has one)
-───────────────────────────────────────────────────────── */
-function fillStats(users) {
-  const total       = users.length;
-  const students    = users.filter(u => u.role === 'student').length;
-  const instructors = users.filter(u => u.role === 'instructor').length;
-  const admins      = users.filter(u => u.role === 'admin').length;
-
-  document.getElementById('total-users').textContent       = total;
-  document.getElementById('total-students').textContent    = students;
-  document.getElementById('total-instructors').textContent = instructors;
-  document.getElementById('total-admins').textContent      = admins;
-
-  const pct = n => total ? Math.round(n / total * 100) + '%' : '—';
-  document.getElementById('d-users').textContent       = `${students} students · ${instructors} instructors · ${admins} admins`;
-  document.getElementById('d-students').textContent    = `${pct(students)} of all users`;
-  document.getElementById('d-instructors').textContent = `${pct(instructors)} of all users`;
-  document.getElementById('d-admins').textContent      = `${pct(admins)} of all users`;
-}
-
 function revealStats() {
-  ['users','students','instructors','admins'].forEach(k => {
+  ['users','students','instructors','courses-stat'].forEach(k => {
     document.getElementById(`sk-${k}`)?.remove();
     const el = document.getElementById(`total-${k}`);
     if (el) el.style.display = '';
   });
 }
 
-/* ─────────────────────────────────────────────────────────
-   FILTER / SEARCH
-───────────────────────────────────────────────────────── */
+function setRefreshing(v) {
+  const btn = document.getElementById('refresh-btn');
+  if (!btn) return;
+  btn.innerHTML = v ? '<span class="spinner"></span> Loading…' : '↻ Refresh';
+  btn.disabled  = v;
+  document.getElementById('live-badge').textContent = v ? '…' : 'Live';
+}
+
+/* ═══════════════════════════════════════════════
+   USERS  →  GET /api/admin/users
+             DELETE /api/admin/users/:id
+═══════════════════════════════════════════════ */
+let ALL_USERS = [], filteredUsers = [], roleFilter = 'all', userPage = 1;
+const PER = 10;
+
+async function loadUsers() {
+  document.getElementById('user-tbody').innerHTML =
+    `<tr><td colspan="4"><div class="state-box"><div><span class="spinner"></span></div><p style="margin-top:14px">Fetching users…</p></div></td></tr>`;
+
+  try {
+    const data = await api('/admin/users');
+    if (!data.success) throw new Error(data.message || 'API error');
+
+    ALL_USERS = data.users || [];
+    document.getElementById('users-subtitle').textContent =
+      `${ALL_USERS.length} users · last synced ${new Date().toLocaleTimeString()}`;
+    document.getElementById('export-btn').disabled = false;
+    filterUsers();
+    showToast('✓', `Loaded ${ALL_USERS.length} users`, 'success');
+  } catch(err) {
+    document.getElementById('user-tbody').innerHTML =
+      `<tr><td colspan="4"><div class="state-box"><div class="state-icon">⚠️</div>
+       <p>${esc(err.message)}</p><div class="hint">Check server or JWT token</div>
+       <br><button class="btn btn-ghost" onclick="loadUsers()" style="margin:12px auto">↻ Retry</button>
+       </div></td></tr>`;
+    showToast('⚠', err.message, 'error');
+  }
+}
+
 function setRole(btn, role) {
-  roleFilter = role; page = 1;
+  roleFilter = role; userPage = 1;
   document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  filterTable();
+  filterUsers();
 }
 
-function filterTable() {
+function filterUsers() {
   const q = (document.getElementById('search').value || '').toLowerCase();
-  filtered = ALL_USERS.filter(u => {
+  filteredUsers = ALL_USERS.filter(u => {
     const name  = (u.username || u.name || '').toLowerCase();
     const email = (u.email || '').toLowerCase();
-    const matchRole = roleFilter === 'all' || u.role === roleFilter;
-    const matchQ    = name.includes(q) || email.includes(q);
-    return matchRole && matchQ;
+    return (roleFilter === 'all' || u.role === roleFilter) && (name.includes(q) || email.includes(q));
   });
-  page = 1;
-  renderTable();
+  userPage = 1;
+  renderUsers();
 }
 
-/* ─────────────────────────────────────────────────────────
-   RENDER TABLE ROWS
-───────────────────────────────────────────────────────── */
-function renderTable() {
+function renderUsers() {
   const tbody = document.getElementById('user-tbody');
-  const total = filtered.length;
-  const start = (page - 1) * PER;
-  const slice = filtered.slice(start, start + PER);
+  const total = filteredUsers.length;
+  const start = (userPage - 1) * PER;
+  const slice = filteredUsers.slice(start, start + PER);
 
   document.getElementById('row-count').textContent = total === 0
     ? 'No users found'
-    : `Showing ${start + 1}–${Math.min(start + PER, total)} of ${total} users`;
+    : `Showing ${start+1}–${Math.min(start+PER,total)} of ${total} users`;
 
   if (total === 0) {
-    tbody.innerHTML = `<tr><td colspan="5">
-      <div class="state-box">
-        <div class="state-icon">🔍</div>
-        <p>No users match your filter</p>
-        <div class="hint">Try a different name, email, or role</div>
-      </div>
-    </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4"><div class="state-box">
+      <div class="state-icon">🔍</div><p>No users match your filter</p>
+      <div class="hint">Try a different name, email, or role</div>
+    </div></td></tr>`;
     document.getElementById('pagination').innerHTML = '';
     return;
   }
 
   tbody.innerHTML = slice.map(u => {
-    /* Support both common field names from different backends */
     const name   = u.username || u.name || 'Unknown';
     const email  = u.email || '—';
     const role   = u.role  || 'student';
-
-    /* Status: check isActive (boolean) then status (string) then default active */
-    const isActive = u.isActive !== undefined ? u.isActive
-                   : u.status !== undefined   ? u.status === 'active'
-                   : true;
-
-    /* Date: accept createdAt (ISO), joined (string) */
     const joined = u.createdAt
-      ? new Date(u.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
-      : u.joined || '—';
-
-    const roleIcon = role === 'admin' ? '⬡' : role === 'instructor' ? '◈' : '○';
+      ? new Date(u.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+      : '—';
+    const roleIcon = role==='admin'?'⬡':role==='instructor'?'◈':'○';
     const uid = esc(u._id || u.id || '');
 
     return `<tr>
-      <td>
-        <div class="user-cell">
-          <div class="avatar ${colorFor(name)}">${initials(name)}</div>
-          <div>
-            <div class="uname">${esc(name)}</div>
-            <div class="uemail">${esc(email)}</div>
-          </div>
-        </div>
-      </td>
+      <td><div class="user-cell">
+        <div class="avatar ${colorFor(name)}">${initials(name)}</div>
+        <div><div class="uname">${esc(name)}</div><div class="uemail">${esc(email)}</div></div>
+      </div></td>
       <td><span class="role-badge role-${role}">${roleIcon} ${cap(role)}</span></td>
-      <td>
-        <div class="status-cell">
-          <div class="status-dot ${isActive ? 'dot-active' : 'dot-inactive'}"></div>
-          ${isActive ? 'Active' : 'Inactive'}
-        </div>
-      </td>
       <td><span class="mono-sm">${joined}</span></td>
       <td>
         <div class="action-menu">
-          <button class="icon-btn" title="Edit" onclick="showToast('✎','Editing ${esc(name.split(' ')[0])}…')">✎</button>
-          <button class="icon-btn danger" title="Delete" onclick="confirmDelete('${uid}','${esc(name)}')">✕</button>
+          <!-- DELETE /api/admin/users/:id -->
+          <button class="icon-btn danger" title="Delete user" onclick="deleteUser('${uid}','${esc(name.replace(/'/g,"\\'"))}')">✕</button>
         </div>
       </td>
     </tr>`;
   }).join('');
 
-  renderPagination(total);
+  renderPagination('pagination', total, userPage, p => { userPage=p; renderUsers(); });
 }
 
-function renderPagination(total) {
-  const pages = Math.ceil(total / PER);
-  const pg = document.getElementById('pagination');
-  if (pages <= 1) { pg.innerHTML = ''; return; }
-  let h = `<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>‹</button>`;
-  for (let i = 1; i <= pages; i++)
-    h += `<button class="pg-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
-  h += `<button class="pg-btn" onclick="goPage(${page+1})" ${page===pages?'disabled':''}>›</button>`;
-  pg.innerHTML = h;
-}
-
-function goPage(p) {
-  const pages = Math.ceil(filtered.length / PER);
-  if (p < 1 || p > pages) return;
-  page = p; renderTable();
-}
-
-/* ─────────────────────────────────────────────────────────
-   DELETE USER  — calls DELETE /api/admin/users/:id
-───────────────────────────────────────────────────────── */
-async function confirmDelete(id, name) {
-  if (!id) { showToast('⚠', 'No user ID — cannot delete', 'error'); return; }
+/* DELETE /api/admin/users/:id */
+async function deleteUser(id, name) {
+  if (!id) { showToast('⚠','No user ID','error'); return; }
   if (!confirm(`Remove "${name}"? This cannot be undone.`)) return;
   try {
-    const res = await fetch(`${window.API_BASE}/admin/users/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!res.ok) throw new Error(`Delete failed (${res.status})`);
-    ALL_USERS = ALL_USERS.filter(u => (u._id || u.id) !== id);
-    fillStats(ALL_USERS);
-    filterTable();
+    await api(`/admin/users/${id}`, 'DELETE');
+    ALL_USERS = ALL_USERS.filter(u => (u._id||u.id) !== id);
+    filterUsers();
     showToast('✓', `"${name}" removed`, 'success');
-  } catch (err) {
+  } catch(err) {
     showToast('✕', err.message, 'error');
   }
 }
 
-/* ─────────────────────────────────────────────────────────
-   EXPORT CSV
-───────────────────────────────────────────────────────── */
+/* Export CSV — no extra endpoint, uses already-fetched data */
 function exportCSV() {
-  const rows = [['Name','Email','Role','Status','Joined']];
-  filtered.forEach(u => {
+  const rows = [['Name','Email','Role','Joined']];
+  filteredUsers.forEach(u => {
     const name   = u.username || u.name || '';
-    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : u.joined || '';
-    const status = u.isActive !== undefined ? (u.isActive ? 'active' : 'inactive') : u.status || '';
-    rows.push([name, u.email||'', u.role||'', status, joined]);
+    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '';
+    rows.push([name, u.email||'', u.role||'', joined]);
   });
-  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv = rows.map(r => r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download = `eduflow-users-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
-  showToast('✓', `Exported ${filtered.length} users`, 'success');
+  showToast('✓',`Exported ${filteredUsers.length} users`,'success');
 }
 
-/* ── Error state in table ── */
-function showTableError(msg) {
-  document.getElementById('user-tbody').innerHTML = `<tr><td colspan="5">
-    <div class="state-box">
-      <div class="state-icon">⚠️</div>
-      <p>${esc(msg)}</p>
-      <div class="hint">Check your server connection or JWT token</div>
-      <br>
-      <button class="btn btn-ghost" onclick="reload()" style="margin:auto;margin-top:12px">↻ Retry</button>
-    </div>
-  </td></tr>`;
-  document.getElementById('row-count').textContent = 'Failed to load';
+/* ═══════════════════════════════════════════════
+   COURSES  →  GET /api/admin/courses
+═══════════════════════════════════════════════ */
+let ALL_COURSES = [], filteredCourses = [], coursePage = 1;
+
+async function loadCourses() {
+  document.getElementById('course-tbody').innerHTML =
+    `<tr><td colspan="4"><div class="state-box"><div><span class="spinner"></span></div><p style="margin-top:14px">Fetching courses…</p></div></td></tr>`;
+
+  try {
+    const data = await api('/admin/courses');
+    if (!data.success) throw new Error(data.message || 'API error');
+
+    ALL_COURSES = data.courses || [];
+    document.getElementById('courses-subtitle').textContent =
+      `${ALL_COURSES.length} courses · last synced ${new Date().toLocaleTimeString()}`;
+    filterCourses();
+    showToast('✓', `Loaded ${ALL_COURSES.length} courses`, 'success');
+  } catch(err) {
+    document.getElementById('course-tbody').innerHTML =
+      `<tr><td colspan="4"><div class="state-box"><div class="state-icon">⚠️</div>
+       <p>${esc(err.message)}</p>
+       <br><button class="btn btn-ghost" onclick="loadCourses()" style="margin:12px auto">↻ Retry</button>
+       </div></td></tr>`;
+    showToast('⚠', err.message, 'error');
+  }
 }
 
-/* ── Refresh ── */
-function reload() { page = 1; filterTable(); loadDashboard(); }
-function setRefreshing(v) {
-  const btn = document.getElementById('refresh-btn');
-  btn.innerHTML = v ? '<span class="spinner"></span> Loading…' : '↻ Refresh';
-  btn.disabled  = v;
-  document.getElementById('live-badge').textContent = v ? '…' : 'Live';
+function filterCourses() {
+  const q = (document.getElementById('course-search').value || '').toLowerCase();
+  filteredCourses = ALL_COURSES.filter(c => {
+    const title = (c.title || '').toLowerCase();
+    const instr = (c.instructor_id?.username || c.instructor_id?.name || '').toLowerCase();
+    return title.includes(q) || instr.includes(q);
+  });
+  coursePage = 1;
+  renderCourses();
+}
+
+function renderCourses() {
+  const tbody = document.getElementById('course-tbody');
+  const total = filteredCourses.length;
+  const start = (coursePage-1)*PER;
+  const slice = filteredCourses.slice(start, start+PER);
+
+  document.getElementById('course-row-count').textContent = total === 0
+    ? 'No courses found'
+    : `Showing ${start+1}–${Math.min(start+PER,total)} of ${total} courses`;
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="state-box">
+      <div class="state-icon">🔍</div><p>No courses found</p>
+    </div></td></tr>`;
+    document.getElementById('course-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = slice.map(c => {
+    const title  = c.title || 'Untitled';
+    const instr  = c.instructor_id?.username || c.instructor_id?.name || '—';
+    const studs  = c.students?.length ?? 0;
+    const date   = c.createdAt
+      ? new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+      : '—';
+    const thumb  = c.thumbnail
+      ? `<img src="${esc(c.thumbnail)}" style="width:38px;height:38px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.outerHTML='<span style=\\'font-size:1.4rem\\'>📘</span>'" alt=""/>`
+      : `<span style="font-size:1.4rem">📘</span>`;
+
+    return `<tr>
+      <td><div class="user-cell">
+        <div class="course-thumb">${thumb}</div>
+        <div><div class="uname">${esc(title)}</div></div>
+      </div></td>
+      <td><span class="mono-sm">${esc(instr)}</span></td>
+      <td><span class="role-badge role-student">👥 ${studs}</span></td>
+      <td><span class="mono-sm">${date}</span></td>
+    </tr>`;
+  }).join('');
+
+  renderPagination('course-pagination', total, coursePage, p => { coursePage=p; renderCourses(); });
+}
+
+/* ── Shared pagination ── */
+function renderPagination(elId, total, current, onPage) {
+  const pages = Math.ceil(total/PER);
+  const pg = document.getElementById(elId);
+  if (pages <= 1) { pg.innerHTML=''; return; }
+  let h = `<button class="pg-btn" onclick="(${onPage})(${current-1})" ${current===1?'disabled':''}>‹</button>`;
+  for (let i=1;i<=pages;i++)
+    h += `<button class="pg-btn ${i===current?'active':''}" onclick="(${onPage})(${i})">${i}</button>`;
+  h += `<button class="pg-btn" onclick="(${onPage})(${current+1})" ${current===pages?'disabled':''}>›</button>`;
+  pg.innerHTML = h;
+}
+
+/* ── Toasts ── */
+function showToast(icon, msg, type='') {
+  const area = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast${type?' t-'+type:''}`;
+  t.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
+  area.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
 }
 
 /* ── Logout ── */
@@ -584,25 +732,9 @@ function logout() {
   window.location.href = '/';
 }
 
-/* ── Toasts ── */
-function showToast(icon, msg, type = '') {
-  const area = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = `toast${type ? ' t-' + type : ''}`;
-  t.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
-  area.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
-}
-
-/* ── Helpers ── */
-const esc = s => String(s)
-  .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-  .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
-
-/* ── Boot ── */
-loadDashboard();
+/* ── Boot: load stats on dashboard tab ── */
+tabLoaded['dashboard'] = true;
+loadStats();
 </script>
-
 </body>
 </html>
