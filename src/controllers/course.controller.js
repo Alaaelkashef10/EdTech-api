@@ -123,7 +123,8 @@ const updateCourse = asyncHandler(async (req, res) => {
  * @access Private (instructor who owns the course)
  * @desc Delete a course
  */
-const deleteCourse = asyncHandler(async (req, res) => {
+const 
+deleteCourse = asyncHandler(async (req, res) => {
   const course = await Course.findById(req.params.courseId);
 
   if (!course) {
@@ -139,6 +140,7 @@ const deleteCourse = asyncHandler(async (req, res) => {
 
   res.json({ success: true, message: 'Course deleted successfully' });
 });
+
 
 module.exports = {
   getCourses,

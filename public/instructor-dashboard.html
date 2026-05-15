@@ -370,28 +370,62 @@
       </div>
     </div>
   </div>
-
+	  <!-- Edit Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit Course</h3>
+        <button class="modal-close" onclick="closeEditModal()">✕</button>
+      </div>
+      <div class="form-grid" style="margin-bottom:1rem">
+        <div class="field">
+          <label>Course Title *</label>
+          <input type="text" id="edit-title" placeholder="Course title"/>
+        </div>
+        <div class="field">
+          <label>Thumbnail URL</label>
+          <input type="text" id="edit-thumbnail" placeholder="https://..."/>
+        </div>
+        <div class="field form-full">
+          <label>Description *</label>
+          <textarea id="edit-description" rows="3" placeholder="What will students learn?"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-primary" onclick="confirmEdit()" id="confirm-edit-btn">Save Changes</button>
+      </div>
+    </div>
+  </div>
   <div id="toast"></div>
 
   <script>
-    // ─── Config ───────────────────────────────────────────────────────────────
-    const API   = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
-    const token = localStorage.getItem('token');
-    const user  = JSON.parse(localStorage.getItem('user') || 'null');
+       // ═══════════════════════════════════════════════════════════════════════
+    //  Config
+    // ═══════════════════════════════════════════════════════════════════════
+    const API    = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+    const token  = localStorage.getItem('token');
+    const user   = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // ─── Auth Guard ───────────────────────────────────────────────────────────
-    // ✅ مصلح: حذفنا الـ else if الأخيرة اللي كانت تعمل redirect لنفس الصفحة
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Auth Guard
+    // ═══════════════════════════════════════════════════════════════════════
     if (!token || !user) {
       window.location.href = '/login.html';
     } else if (user.role !== 'instructor' && !user.is_instructor) {
       window.location.href = '/dashboard.html';
     }
 
-    // ─── State ────────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  State
+    // ═══════════════════════════════════════════════════════════════════════
     let allCourses   = [];
     let deleteTarget = null;
+    let editTarget   = null;
 
-    // ─── Init ─────────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Init
+    // ═══════════════════════════════════════════════════════════════════════
     document.getElementById('nav-username').textContent =
       user?.username || user?.name || 'Instructor';
 
@@ -404,15 +438,16 @@
         console.error('Dashboard init error:', err);
         document.getElementById('page-loading').innerHTML =
           `<p style="color:var(--rose)">Failed to load dashboard.
-           <a href="/login.html" style="color:var(--cyan)">Re-login</a></p>`;
+            <a href="/login.html" style="color:var(--cyan)">Re-login</a></p>`;
       }
     }
 
-    // ─── Load Courses ─────────────────────────────────────────────────────────
-    // ✅ مصلح: نستخدم /api/courses/me/courses بدل ما نجيب كل الكورسات ونفلتر
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Load Courses
+    // ═══════════════════════════════════════════════════════════════════════
     async function loadCourses() {
-      const res  = await apiFetch('/api/courses/me/courses');
-      const data = await res.json();
+      const res   = await apiFetch('/api/courses/me/courses');
+      const data  = await res.json();
 
       if (!res.ok) throw new Error(data.message || 'Failed to fetch courses');
 
@@ -421,21 +456,25 @@
       renderCourses();
     }
 
-    // ─── Render Stats ─────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Render Stats
+    // ═══════════════════════════════════════════════════════════════════════
     function renderStats() {
       const totalStudents = allCourses.reduce((sum, c) => sum + (c.students?.length || 0), 0);
-      document.getElementById('stat-courses').textContent  = allCourses.length;
-      document.getElementById('stat-students').textContent = totalStudents;
-      document.getElementById('stat-lessons').textContent  = '—';
+      document.getElementById('stat-courses').textContent   = allCourses.length;
+      document.getElementById('stat-students').textContent  = totalStudents;
+      document.getElementById('stat-lessons').textContent   = '—';
       document.getElementById('courses-count').textContent =
         `${allCourses.length} course${allCourses.length !== 1 ? 's' : ''}`;
     }
 
-    // ─── Render Courses ───────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Render Courses
+    // ═══════════════════════════════════════════════════════════════════════
     function renderCourses() {
-      const list    = document.getElementById('courses-list');
-      const empty   = document.getElementById('courses-empty');
-      const loading = document.getElementById('courses-loading');
+      const list     = document.getElementById('courses-list');
+      const empty    = document.getElementById('courses-empty');
+      const loading  = document.getElementById('courses-loading');
 
       loading.style.display = 'none';
 
@@ -455,8 +494,8 @@
         });
         const thumb = c.thumbnail
           ? `<img src="${escHtml(c.thumbnail)}" class="course-thumb"
-               onerror="this.outerHTML='<div class=\\'course-thumb-placeholder\\'>📘</div>'" alt=""/>`
-          : `<div class="course-thumb-placeholder">📘</div>`;
+               onerror="this.outerHTML='<div class=\\'course-thumb-placeholder\\'>📚</div>'" alt=""/>`
+          : `<div class="course-thumb-placeholder">📚</div>`;
 
         return `
           <div class="course-row" style="animation-delay:${i * 60}ms">
@@ -467,7 +506,7 @@
                 <span class="meta-pill students">👥 ${studentCount} student${studentCount !== 1 ? 's' : ''}</span>
                 <span class="meta-pill date">📅 ${date}</span>
                 ${c.is_completed
-                  ? '<span class="meta-pill" style="color:var(--emerald);border-color:rgba(0,229,160,.2);background:rgba(0,229,160,.06)">✓ Completed</span>'
+                  ? '<span class="meta-pill" style="color:var(--emerald);border-color:rgba(0,229,160,.2);background:rgba(0,229,160,.06)">✔ Completed</span>'
                   : ''}
               </div>
             </div>
@@ -475,16 +514,21 @@
               <button class="btn-action" onclick="viewCourse('${c._id}')">
                 <span>View</span> →
               </button>
+              <button class="btn-action" onclick="openEditModal('${c._id}')">
+                ✏️ Edit
+              </button>
               <button class="btn-action danger"
                 onclick="openDeleteModal('${c._id}', '${escHtml(c.title).replace(/'/g,"\\'")}')">
-                🗑
+                🗑️
               </button>
             </div>
           </div>`;
       }).join('');
     }
 
-    // ─── Create Course ────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Create Course
+    // ═══════════════════════════════════════════════════════════════════════
     async function createCourse() {
       const title       = document.getElementById('new-title').value.trim();
       const description = document.getElementById('new-description').value.trim();
@@ -514,7 +558,7 @@
         allCourses.unshift(data.course);
         renderStats();
         renderCourses();
-        showToast('✅ Course created!', 'success');
+        showToast('🎉 Course created!', 'success');
 
       } catch (err) {
         showAlert('error', err.message);
@@ -524,7 +568,75 @@
       }
     }
 
-    // ─── Delete Flow ──────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Edit Flow
+    // ═══════════════════════════════════════════════════════════════════════
+    function openEditModal(id) {
+      const course = allCourses.find(c => c._id === id);
+      if (!course) return;
+
+      editTarget = id;
+      document.getElementById('edit-title').value       = course.title || '';
+      document.getElementById('edit-description').value = course.description || '';
+      document.getElementById('edit-thumbnail').value   = course.thumbnail || '';
+      document.getElementById('edit-modal').classList.add('open');
+    }
+
+    function closeEditModal() {
+      editTarget = null;
+      document.getElementById('edit-modal').classList.remove('open');
+    }
+
+    async function confirmEdit() {
+      if (!editTarget) return;
+
+      const title       = document.getElementById('edit-title').value.trim();
+      const description = document.getElementById('edit-description').value.trim();
+      const thumbnail   = document.getElementById('edit-thumbnail').value.trim();
+
+      if (!title)       return showToast('Title is required', 'error');
+      if (!description) return showToast('Description is required', 'error');
+
+      const btn = document.getElementById('confirm-edit-btn');
+      btn.disabled    = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const body = {};
+        if (title) body.title = title;
+        if (description) body.description = description;
+        if (thumbnail) body.thumbnail = thumbnail;
+
+        const res  = await apiFetch(`/api/courses/${editTarget}`, 'PUT', body);
+        const data = await res.json();
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || 'Update failed');
+        }
+
+        // Update local state
+        const idx = allCourses.findIndex(c => c._id === editTarget);
+        if (idx !== -1) {
+          allCourses[idx] = { ...allCourses[idx], ...data.course };
+        }
+
+        renderCourses();
+        closeEditModal();
+        showToast('✏️ Course updated', 'success');
+
+      } catch (err) {
+        showToast(err.message, 'error');
+        closeEditModal();
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Save Changes';
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Delete Flow
+    // ═══════════════════════════════════════════════════════════════════════
     function openDeleteModal(id, title) {
       deleteTarget = id;
       document.getElementById('delete-course-name').textContent = title;
@@ -543,16 +655,17 @@
 
       try {
         const res = await apiFetch(`/api/courses/${deleteTarget}`, 'DELETE');
+        
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(data.message || 'Delete failed');
+          throw new Error(data.message || 'Delete failed — you may not own this course');
         }
 
         allCourses = allCourses.filter(c => c._id !== deleteTarget);
         renderStats();
         renderCourses();
         closeDeleteModal();
-        showToast('🗑 Course deleted', 'success');
+        showToast('🗑️ Course deleted', 'success');
 
       } catch (err) {
         showToast(err.message, 'error');
@@ -563,12 +676,16 @@
       }
     }
 
-    // ─── View Course ──────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  View Course
+    // ═══════════════════════════════════════════════════════════════════════
     function viewCourse(id) {
       window.location.href = `/course.html?id=${id}`;
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Helpers
+    // ═══════════════════════════════════════════════════════════════════════
     function apiFetch(path, method = 'GET', body = null) {
       const opts = {
         method,
@@ -616,8 +733,13 @@
     document.getElementById('delete-modal').addEventListener('click', function(e) {
       if (e.target === this) closeDeleteModal();
     });
+    document.getElementById('edit-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeEditModal();
+    });
 
-    // ─── Boot ─────────────────────────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════
+    //  Boot
+    // ═══════════════════════════════════════════════════════════════════════
     init();
   </script>
 </body>
