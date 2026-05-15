@@ -12,9 +12,9 @@ The system supports two roles — **instructors** who create and manage courses,
 | Role        | Count | Example Credentials                                 |
 |-------------|-------|-----------------------------------------------------|
 | Super Admin | 1     | `admin@admin.com / 123456`                          |
-| Admins      | 5     | `diego.johnson.admin3@example.com / 123456`         |
-| Instructors | 50    | `omar.yamamoto.instructor4@example.com / 123456`    |
-| Students    | 100   | `studentX@domain.com / 123456`                      |
+| Admins      | 5     | `kenji.nakamura.instructor1@example.com / 123456`   |
+| Instructors | 50    | `ava.ahmed.instructor1@example.com / 123456`        |
+| Students    | 100   | `kenji.ahmed.student1@example.com / 123456`         |
 ---
 
 ## Table of Contents
