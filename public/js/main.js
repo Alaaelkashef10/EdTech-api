@@ -8,73 +8,7 @@ const API = window.API_BASE ||
 let allCourses = [];
 
 // Update Navbar (Student aware)
-function updateNav() {
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
-  
-  const loginLink = document.getElementById('nav-login');
-  const registerLink = document.getElementById('nav-register');
-  const logoutBtn = document.getElementById('nav-logout');
-  const userInfo = document.getElementById('nav-user-info');
-  const usernameEl = document.getElementById('nav-username');
-  const avatarEl = document.getElementById('nav-avatar');
-  
-  // Dynamic links
-  const dashboardLink = document.getElementById('nav-dashboard');
-  const profileLink = document.getElementById('nav-profile');
-  const adminLink = document.getElementById('nav-admin');
-  
-  if (token && user) {
-    // Hide auth links
-    if (loginLink) loginLink.style.display = 'none';
-    if (registerLink) registerLink.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block';
-    if (userInfo) userInfo.style.display = 'flex';
-    if (usernameEl) usernameEl.textContent = user.username || 'User';
-    if (avatarEl) avatarEl.textContent = (user.username || 'U').charAt(0).toUpperCase();
-    
-    // Set role-specific links
-    if (user.role === 'student') {
-      if (dashboardLink) {
-        dashboardLink.style.display = 'inline-block';
-        dashboardLink.href = '/dashboard.html';
-      }
-      if (profileLink) {
-        profileLink.style.display = 'inline-block';
-        profileLink.href = '/student-profile.html';
-      }
-    } else if (user.role === 'instructor') {
-      if (dashboardLink) {
-        dashboardLink.style.display = 'inline-block';
-        dashboardLink.href = '/instructor-dashboard.html';
-      }
-      if (profileLink) {
-        profileLink.style.display = 'inline-block';
-        profileLink.href = '/instructor-profile.html';
-      }
-    } else if (user.role === 'admin') {
-      if (adminLink) adminLink.style.display = 'inline-block';
-      if (dashboardLink) {
-        dashboardLink.style.display = 'inline-block';
-        dashboardLink.href = '/admin-dashboard.html';
-      }
-    }
-  } else {
-    // Show auth links
-    if (loginLink) loginLink.style.display = 'inline-block';
-    if (registerLink) registerLink.style.display = 'inline-block';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-    if (userInfo) userInfo.style.display = 'none';
-    
-    // Hide all role links
-    [dashboardLink, profileLink, adminLink].forEach(el => {
-      if (el) {
-        el.style.display = 'none';
-        el.href = '#';
-      }
-    });
-  }
-}
+
 
 function logout() {
   localStorage.removeItem('token');
@@ -179,7 +113,6 @@ function initSearch() {
 
 // Initialize page
 function init() {
-  updateNav();
   initSearch();
   loadCourses();
 }

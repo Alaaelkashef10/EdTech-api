@@ -78,17 +78,28 @@
 </head>
 <body>
 
-  <nav>
-    <a href="/" class="logo">Edu<span>Flow</span></a>
-    <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/courses.html" class="nav-link">Courses</a>
-      <a href="/dashboard.html" class="nav-link active">Dashboard</a>
-      <a href="/student-profile.html" class="nav-link">Profile</a>
-      <span class="nav-user">Hi, <strong id="nav-username">—</strong></span>
-      <button class="btn-ghost" onclick="logout()">Logout</button>
-    </div>
-  </nav>
+<nav>
+  <a href="/" class="logo">Edu<span>Flow</span></a>
+  <div class="nav-links">
+    <a href="/" class="nav-link" id="nav-home">Home</a>
+    <a href="/courses.html" class="nav-link" id="nav-courses">Courses</a>
+    
+    <!-- Dynamic: href set by JavaScript based on role -->
+    <a href="#" class="nav-link" id="nav-dashboard" style="display:none">Dashboard</a>
+    <a href="#" class="nav-link" id="nav-profile" style="display:none">Profile</a>
+    
+    <!-- Auth -->
+    <a href="/login.html" class="nav-link" id="nav-login">Login</a>
+    <a href="/register.html" class="nav-link" id="nav-register">Register</a>
+    
+    <!-- User -->
+    <span class="nav-user" id="nav-user-info" style="display:none">
+      <span id="nav-avatar">U</span>
+      <strong id="nav-username">—</strong>
+    </span>
+    <button class="btn-ghost-nav" onclick="logout()" id="nav-logout" style="display:none">Logout</button>
+  </div>
+</nav>
 
   <div class="page">
     <div class="welcome">
@@ -122,7 +133,7 @@
   </div>
 
   <div id="toast"></div>
-
+	<script src="/js/nav.js"></script>
   <script>
     const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
     const token = localStorage.getItem('token');
