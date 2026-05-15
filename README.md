@@ -3,6 +3,9 @@
 A RESTful back-end API for an online learning platform built with **Node.js**, **Express**, and **MongoDB**.  
 The system supports two roles — **instructors** who create and manage courses, and **students** who enroll and track their progress.
 
+
+**production : https://edtech-api-production.up.railway.app**
+
 ---
 ## 👥 User Seeding Cardinalities
 
