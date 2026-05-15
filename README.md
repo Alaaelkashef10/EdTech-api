@@ -2,6 +2,15 @@
 
 A RESTful back-end API for an online learning platform built with **Node.js**, **Express**, and **MongoDB**.  
 The system supports two roles — **instructors** who create and manage courses, and **students** who enroll and track their progress.
+---
+## 👥 User Seeding Cardinalities
+
+| Role        | Count | Example Credentials                  |
+|-------------|-------|--------------------------------------|
+| Super Admin | 1     | `admin@admin.com / 123456`           |
+| Admins      | 5     | `adminX@domain.com / 123456`         |
+| Instructors | 50    | `instructorX@domain.com / 123456`    |
+| Students    | 100   | `studentX@domain.com / 123456`       |
 
 ---
 
