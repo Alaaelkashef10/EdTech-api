@@ -103,7 +103,7 @@ async function login() {
     localStorage.setItem('user', JSON.stringify(data.user));
     if (data.user.role === 'admin') {
       window.location.href = '/admin-dashboard.html';
-    } else if (data.user.is_instructor) {
+    } else if (user.role === 'instructor') {
       window.location.href = '/instructor-dashboard.html';
     } else {
       window.location.href = '/dashboard.html';

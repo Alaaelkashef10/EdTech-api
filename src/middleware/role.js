@@ -12,6 +12,7 @@ const role = (...roles) => {
       return next();
     }
 
+
     if (roles.includes(userRole)) {
       return next();
     }
